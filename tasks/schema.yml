@@ -1,0 +1,9 @@
+---
+
+- name: (schema) Import schemas
+  shell: 'ldapadd {{ ldap_connection }} -f {{ workspace }}/{{ item }}'
+  environment:
+    bind_password: '{{ bind_password }}'
+  with_items:
+    - schema.ldif
+    - pwm-schema.ldif

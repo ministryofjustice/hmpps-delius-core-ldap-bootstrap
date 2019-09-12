@@ -1,0 +1,28 @@
+---
+
+- name: (copy-files) Copy files
+  copy:
+    src: '{{ item.file }}'
+    dest: '{{ workspace }}/{{ item.file }}'
+    mode: '{{ item.mode }}'
+  with_items:
+    - { file: ldif-sort.sh, mode: u+x }
+
+- name: (copy-files) Copy files from templates
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - db.ldif
+    - schema.ldif
+    - pwm-schema.ldif
+    - context.ldif
+    - service-users.ldif
+    - test-users.ldif
+
+- name: (copy-files) Copy backup script
+  template:
+    src: 'backup_ldap.sh.j2'
+    dest: '/usr/bin/backup_ldap'
+    mode: u+x

@@ -1,0 +1,31 @@
+---
+
+- name: (facts) Get hostname
+  shell: hostname
+  register: hostname
+
+- name: (facts) Set facts
+  set_fact:
+    bind_user: "{{ bind_user | default('cn=Directory Manager') }}"
+    base_service_users: 'cn=EISUsers,{{ base_users }}'
+    base_roles: 'cn=ndRoleCatalogue,{{ base_users }}'
+    base_rolegroups: 'cn=ndRoleGroups,{{ base_users }}'
+    casenotes_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/casenotes_user', region=region) }}"
+    oasys_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/oasys_user', region=region) }}"
+    iaps_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/iaps_user', region=region) }}"
+    dss_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/dss_user', region=region) }}"
+    performance_test_user_password: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/performance_test_user_password', region=region) }}"
+
+- name: (facts) Set connection string
+  set_fact:
+    ldap_connection: '-H {{ ldap_protocol }}://localhost:{{ ldap_port }} -D "{{ bind_user }}" -w ${bind_password}'
+
+- name: (facts) Get the name of the latest backup
+  when: import_users_ldif == 'LATEST'
+  shell: "aws s3 ls s3://{{ s3_backups_bucket }}/ldap/ --recursive | sort | tail -n 1 | awk '{print $4}'"
+  register: latest_backup
+
+- name: (facts) Store the name of the latest backup
+  when: import_users_ldif == 'LATEST'
+  set_fact:
+    import_users_ldif: '{{ latest_backup.stdout }}'

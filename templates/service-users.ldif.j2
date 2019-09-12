@@ -1,0 +1,186 @@
+dn: {{ base_service_users }}
+objectclass: top
+objectclass: javaContainer
+
+dn: cn={{ oasys_user }},{{ base_service_users }}
+businesscategory: OIBI096
+businesscategory: OIBI097
+businesscategory: OABI007
+businesscategory: RRBI211
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+sn: {{ oasys_user }}
+cn: {{ oasys_user }}
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/oasys_user_password', region=region) }}
+
+dn: cn={{ iaps_user }},{{ base_service_users }}
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+businesscategory: SEBI018
+businesscategory: SEBI019
+businesscategory: SEBI020
+businesscategory: OIBI998
+businesscategory: OIBI999
+businesscategory: OIBI100
+businesscategory: OIBI101
+businesscategory: EXBI200
+businesscategory: EXBI201
+businesscategory: DMBI060
+businesscategory: DMBI061
+businesscategory: OIBI098
+businesscategory: OIBI099
+businesscategory: CLBI003
+businesscategory: CLBI007
+businesscategory: CLBI044
+businesscategory: SEBI021
+sn: {{ iaps_user }}
+cn: {{ iaps_user }}
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/iaps_user_password', region=region) }}
+
+dn: cn={{ dss_user }},{{ base_service_users }}
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+businesscategory: DSBI004
+sn: {{ dss_user }}
+cn: {{ dss_user }}
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/dss_user_password', region=region) }}
+
+dn: cn=pwm-test,{{ base_users }}
+cn: pwm-test
+sn: pwm-test
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/pwm/pwm/config_password', region=region) }}
+objectclass: pwmUser
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+
+dn: cn=pwm-admin,{{ base_users }}
+cn: pwm-admin
+sn: pwm-admin
+pwmAdmin: TRUE
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/pwm/pwm/config_password', region=region) }}
+objectclass: pwmUser
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+
+{% for item in ['ALF','SPG','C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C12','C13','C14','C15','C16','C17','C18','C19','C20','C21'] %}
+dn: cn={{ item }},{{ base_users }}
+givenname: {{ item }}
+sn: {{ item }}
+mail: {{ item }}
+uid: {{ item }}
+objectclass: NDUser
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+userhomearea: {{ item }}
+cn: {{ item }}
+description: CRC {{ item }} system user
+usersector: private
+
+dn: cn=SPGBT000,cn={{ item }},{{ base_users }}
+aliasedobjectname: cn=SPGBT000,{{ base_roles }}
+objectclass: NDRoleAssociation
+objectclass: alias
+objectclass: top
+cn: SPGBT000
+
+dn: cn=SPGBT001,cn={{ item }},{{ base_users }}
+aliasedobjectname: cn=SPGBT001,{{ base_roles }}
+objectclass: NDRoleAssociation
+objectclass: alias
+objectclass: top
+cn: SPGBT001
+
+dn: cn=SPGBT003,cn={{ item }},{{ base_users }}
+aliasedobjectname: cn=SPGBT003,{{ base_roles }}
+objectclass: NDRoleAssociation
+objectclass: alias
+objectclass: top
+cn: SPGBT003
+
+dn: cn=SPGBT010,cn={{ item }},{{ base_users }}
+aliasedobjectname: cn=SPGBT010,{{ base_roles }}
+objectclass: NDRoleAssociation
+objectclass: alias
+objectclass: top
+cn: SPGBT010
+
+dn: cn=SPGBT900,cn={{ item }},{{ base_users }}
+aliasedobjectname: cn=SPGBT900,{{ base_roles }}
+objectclass: NDRoleAssociation
+objectclass: alias
+objectclass: top
+cn: SPGBT900
+
+{% endfor %}
+dn: cn={{ casenotes_user }},{{ base_service_users }}
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+sn: {{ casenotes_user }}
+cn: {{ casenotes_user }}
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/casenotes_password', region=region) }}
+
+dn: cn=DSS-Group,{{ base_service_users }}
+objectclass: groupOfUniqueNames
+objectclass: top
+uniquemember: cn=dss-user,{{ base_service_users }}
+cn: DSS-Group
+
+dn: cn=IAPS-Group,{{ base_service_users }}
+objectclass: groupOfUniqueNames
+objectclass: top
+uniquemember: cn=iaps-user,{{ base_service_users }}
+cn: IAPS-Group
+
+dn: cn=OASYS-Group,{{ base_service_users }}
+objectclass: groupOfUniqueNames
+objectclass: top
+uniquemember: cn=oasys-user,{{ base_service_users }}
+cn: OASYS-Group
+
+dn: cn=CaseNotesAPI-Group,{{ base_service_users }}
+objectclass: groupOfUniqueNames
+objectclass: top
+uniquemember: cn=casenotes-user,{{ base_service_users }}
+cn: CaseNotesAPI-Group
+
+dn: cn=SPG-Group,{{ base_service_users }}
+objectclass: groupOfUniqueNames
+objectclass: top
+uniquemember: cn=alf,{{ base_users }}
+uniquemember: cn=c01,{{ base_users }}
+uniquemember: cn=c02,{{ base_users }}
+uniquemember: cn=c03,{{ base_users }}
+uniquemember: cn=c04,{{ base_users }}
+uniquemember: cn=c05,{{ base_users }}
+uniquemember: cn=c06,{{ base_users }}
+uniquemember: cn=c07,{{ base_users }}
+uniquemember: cn=c08,{{ base_users }}
+uniquemember: cn=c09,{{ base_users }}
+uniquemember: cn=c10,{{ base_users }}
+uniquemember: cn=c11,{{ base_users }}
+uniquemember: cn=c12,{{ base_users }}
+uniquemember: cn=c13,{{ base_users }}
+uniquemember: cn=c14,{{ base_users }}
+uniquemember: cn=c15,{{ base_users }}
+uniquemember: cn=c16,{{ base_users }}
+uniquemember: cn=c17,{{ base_users }}
+uniquemember: cn=c18,{{ base_users }}
+uniquemember: cn=c19,{{ base_users }}
+uniquemember: cn=c20,{{ base_users }}
+uniquemember: cn=c21,{{ base_users }}
+uniquemember: cn=spg,{{ base_users }}
+cn: SPG-Group

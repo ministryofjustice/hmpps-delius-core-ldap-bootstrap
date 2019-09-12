@@ -1,0 +1,19 @@
+---
+
+- name: (config-service) Create suffix and admin user
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// {{ workspace }}/db.ldif'
+
+- name: (config-service) Configure database
+  template:
+    src: 'DB_CONFIG.j2'
+    dest: '/var/lib/ldap/DB_CONFIG'
+    owner: ldap
+    group: ldap
+    mode: 0644
+
+- name: (config-service) Install openldap schemas
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// /etc/openldap/schema/{{ item }}'
+  with_items:
+    - cosine.ldif
+    - nis.ldif
+    - inetorgperson.ldif

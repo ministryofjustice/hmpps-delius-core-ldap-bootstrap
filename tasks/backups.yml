@@ -1,0 +1,8 @@
+---
+
+- name: (backups) Create a cron job to perform daily backups
+  cron:
+    name: Backup to S3
+    job: 'backup_ldap'
+    # TODO: add a var for backup schedule
+    special_time: daily

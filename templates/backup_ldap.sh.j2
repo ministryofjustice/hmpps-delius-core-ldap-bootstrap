@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set +x
+
+backupfile=/tmp/backup-$(date +%Y%m%d-%H%M%S).ldif
+bind_password=$(aws ssm get-parameter --region eu-west-2 --with-decryption --name /{{ environment_name }}/{{ project_name }}/apacheds/apacheds/ldap_admin_password | jq -r .Parameter.Value)
+ldapsearch -L {{ ldap_connection }} -b {{ base_root }} '(objectclass=*)' > ${backupfile}
+
+
+if [ -s "${backupfile}" ]
+then
+    aws s3 cp ${backupfile} s3://{{ s3_backups_bucket }}/ldap/
+    rm -f ${backupfile}
+else
+    echo "Backup file is empty or doesn't exist"
+    exit 1
+fi
