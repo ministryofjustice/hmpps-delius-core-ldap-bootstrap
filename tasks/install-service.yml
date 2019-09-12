@@ -6,7 +6,7 @@
     state: present
   with_items:
     - openldap
-    - openldap-server
+    - openldap-servers
     - openldap-clients
 
 - name: (service) Set slapd args
