@@ -1,4 +1,9 @@
+dn: {{ base_root }}
+dc: {{ base_root | regex_replace('^.+?=(.+?),.*$', '\\1') }}
+objectClass: domain
+objectClass: top
+
 dn: {{ base_users }}
-{{ base_users | regex_replace('(^.+?)=.*', '\\1') }}: {{ base_users | regex_replace('^.+?=(.+?),', '\\1') }}
+{{ base_users | regex_replace('(^.+?)=.*$', '\\1') }}: {{ base_users | regex_replace('^.+?=(.+?),.*$', '\\1') }}
 objectclass: {{ base_users | regex_replace('^(.+?)=.*', '\\1') | replace('ou', 'organizationalUnit') }}
 objectclass: top

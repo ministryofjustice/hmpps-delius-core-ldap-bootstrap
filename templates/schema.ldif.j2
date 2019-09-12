@@ -58,7 +58,7 @@ olcObjectClasses: ( 1.1.1.1.21 NAME 'UserPreferences' SUP top AUXILIARY MUST cn 
   defaultStaff $
   defaultPremisesGrouping $
   defaultPremises ) )
-olcObjectClasses: ( 1.1.1.1.22 NAME 'NDRole' SUP top AUXILIARY MUST cn MAY (
+olcObjectClasses: ( 1.1.1.1.22 NAME 'NDRole' SUP top STRUCTURAL MUST cn MAY (
   AdminLevel $
   Level1 $
   Level2 $
@@ -67,7 +67,7 @@ olcObjectClasses: ( 1.1.1.1.22 NAME 'NDRole' SUP top AUXILIARY MUST cn MAY (
   description $
   UIBusinessInteractionCollection ) )
 olcObjectClasses: ( 1.1.1.1.23 NAME 'NDRoleAssociation' SUP top AUXILIARY MUST cn )
-olcObjectClasses: ( 1.1.1.1.24 NAME 'NDRoleGroup' SUP top AUXILIARY MUST cn )
+olcObjectClasses: ( 1.1.1.1.24 NAME 'NDRoleGroup' SUP top STRUCTURAL MUST cn )
 olcObjectClasses: ( 1.1.1.1.25 NAME 'NDUser' SUP top AUXILIARY MUST userSector MAY (
   userHomeArea $
   startDate $

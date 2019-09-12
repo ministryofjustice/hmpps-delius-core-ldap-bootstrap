@@ -9,7 +9,7 @@
     tags:
       ndelius_version: "Deploying - {{ ndelius_version }}"
 
-- name: Create workspace
+- name: (main) Create workspace
   file:
     path: '{{ workspace }}'
     state: directory
@@ -57,7 +57,7 @@
 - name: Unblock LDAP port
   include: port-unblock.yml
 
-- name: Remove workspace
+- name: (main) Remove workspace
   file:
     path: '{{ workspace }}'
     state: absent
