@@ -17,3 +17,4 @@
     - cosine.ldif
     - nis.ldif
     - inetorgperson.ldif
+    - java.ldif

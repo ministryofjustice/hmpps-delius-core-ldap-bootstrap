@@ -20,7 +20,7 @@ ldap_port: Port to expose the ldap on
 bind_user: Admin user to create. Default='cn=admin,{{ base_root }}'.
 bind_password: Desired password for the admin user.
 base_root: The root context for the directory (eg. dc=moj,dc=com)
-base_users: The context where users are stored (eg. ou=Users,dc=moj,dc=com). Note currently this must be defined as an ou/organizationalUnit
+base_users: The context where users are stored (eg. ou=Users,dc=moj,dc=com)
 
 # Data import
 import_users_ldif: LDIF file to import from the s3_backups_bucket. This can be set to LATEST to retrieve the latest backup from S3. Default=None (no users)
