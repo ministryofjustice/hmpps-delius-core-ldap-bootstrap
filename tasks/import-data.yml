@@ -12,7 +12,7 @@
 
 - name: (import-data) Import users
   when: import_users_ldif != ''
-  shell: 'ldapadd {{ ldap_connection }} -c -f {{ workspace }}/{{ import_users_ldif }} > /var/log/import_users.log 2>&1'
+  shell: 'time ldapadd {{ ldap_connection }} -c -f {{ workspace }}/{{ import_users_ldif }} > /var/log/import_users.log 2>&1'
   register: import_users_from_backup
   failed_when: import_users_from_backup.rc not in [0,33,68]
   # Allowed return codes:
