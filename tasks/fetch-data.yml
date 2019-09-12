@@ -52,6 +52,8 @@
         regexp: '{{ item.regexp }}'
         replace: '{{ item.replace }}'
       with_items:
+        # Unix line endings
+        - { regexp: '\r', replace: '' }
         # Unwrap lines to make it easier when searching:
         - { regexp: '\n ([^\n])', replace: '\1' }
         # Remove blocks for service users/groups eg. Cxx, SPG, ALF, IAPS-User, IAPS-Group etc
