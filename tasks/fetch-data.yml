@@ -78,7 +78,7 @@
     - name: (fetch-data.users) Replace context values
       replace:
         path: '{{ workspace }}/{{ import_users_ldif }}'
-        regexp: '{{ import_users_ldif_base_users }}'
+        regexp: "{{ import_users_ldif_base_users.split(',') | join('\\s+?,\\s+?') }}"
         replace: '{{ base_users }}'
 
     - name: (fetch-data.users) Remove Oracle-specific stuff
