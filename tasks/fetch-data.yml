@@ -68,6 +68,16 @@
         - { regexp: '(?i)^(.+?:\s*?)true\s*?$', replace: '\1TRUE' }
         - { regexp: '(?i)^(.+?:\s*?)false\s*?$', replace: '\1FALSE' }
 
+    - name: (fetch-data.users) Base64-decode any encoded DNs
+      # Encoded attributes use double colon, so encoded DNs will look like 'dn:: <base64-value>'
+      shell: "perl -MMIME::Base64 -pi -e 's/^dn::\\s*?(.+)$/\"dn: \".decode_base64($1)/ei' {{ workspace }}/{{ import_users_ldif }}"
+
+    - name: (fetch-data.users) Remove any mail attributes containing non-ASCII characters, as per RFC4524 # https://tools.ietf.org/html/rfc4524#section-2.16
+      lineinfile:
+        path: '{{ workspace }}/{{ import_users_ldif }}'
+        regexp: '^mail::'
+        state: absent
+
     - name: (fetch-data.users) Remove any parent entries
       replace:
         path: '{{ workspace }}/{{ import_users_ldif }}'
@@ -91,9 +101,9 @@
         # Remove oracle default users:
         - { regexp: '(?i)^dn:.*cn=orcladmin,[\w\W]+?\n\n', replace: '' }
         - { regexp: '(?i)^dn:.*cn=public,[\w\W]+?\n\n', replace: '' }
-        # Replace oracle start/end date attributes with out own:
-        - { regexp: '(?i)^orclActiveStartDate: ', replace: 'startDate: ' }
-        - { regexp: '(?i)^orclActiveEndDate: ', replace: 'endDate: ' }
+        # Replace oracle start/end date attributes with our own:
+        - { regexp: '(?i)^orclActiveStartDate(:{1,2}) ', replace: 'startDate\1 ' }
+        - { regexp: '(?i)^orclActiveEndDate(:{1,2}) ', replace: 'endDate\1 ' }
         # Remove oracle objectclasses:
         - { regexp: '(?i)^objectclass: orcl.+?\n', replace: '' }
         # Remove oracle attributes:
