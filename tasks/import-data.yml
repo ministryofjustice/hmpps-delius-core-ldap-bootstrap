@@ -10,6 +10,9 @@
     - { file: nd_role_groups.ldif }
     - { file: service-users.ldif }
 
+- name: (import-data) Set access for users
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/acl.ldif'
+
 - name: (import-data) Import users
   when: import_users_ldif != ''
   shell: 'time ldapadd {{ ldap_connection }} -c -f {{ workspace }}/{{ import_users_ldif }} > /var/log/import_users.log 2>&1'
