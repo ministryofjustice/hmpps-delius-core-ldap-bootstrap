@@ -46,6 +46,10 @@
         dest: '{{ workspace }}/{{ import_users_ldif }}'
         mode: get
 
+    - name: (fetch-data.users) Append empty lines to file
+      # This ensures the regexes in the subsequent tasks can take into account the final block in the LDIF
+      shell: "echo '\n\n' >> {{ workspace }}/{{ import_users_ldif }}"
+
     - name: (fetch-data.users) Remove service users and roles, so we can re-add them with the desired details
       replace:
         path: '{{ workspace }}/{{ import_users_ldif }}'
