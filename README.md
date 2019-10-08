@@ -30,6 +30,27 @@ perf_test_users: Number of users to create to support performance testing. Defau
 
 ```
 
+TODO
+----
+Changes that were made manually in production to support go-live should be implemented as code:
+- [ ] Create cn=admin as proxy admin, instead of root dn
+- [ ] Add indexes
+- [x] Fix ACL
+- [ ] Set timelimit
+- [ ] Set number of threads
+- [ ] Set cache sizes
+- [ ] Update SLAPD_OPTIONS with logging config
+- [ ] Setup rsyslog for logging
+
+The following changes should also be added:
+- [ ] Update SLAPD_URLS correctly
+- [ ] Push logs to cloudwatch
+- [ ] Push monitor db info to cloudwatch
+- [ ] Separate ldap restore into it's own job
+- [ ] Make backup frequency configurable (currently is daily, hourly would be better)
+- [ ] Add replicas/standbys or configure multi-master
+- [ ] Add cron job or overlay to implement user start/end dates
+
 Dependencies
 ------------
 
