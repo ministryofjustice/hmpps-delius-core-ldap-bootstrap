@@ -43,6 +43,7 @@ Changes that were made manually in production to support go-live should be imple
 - [ ] Setup rsyslog for logging
 - [ ] Switch to MDB
 - [ ] Update backup script to use root dn
+- [ ] Add MIS/BO and FS groups to restore process from S3
 
 The following changes should also be added:
 - [ ] Update SLAPD_URLS correctly
