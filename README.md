@@ -41,6 +41,8 @@ Changes that were made manually in production to support go-live should be imple
 - [ ] Set cache sizes
 - [ ] Update SLAPD_OPTIONS with logging config
 - [ ] Setup rsyslog for logging
+- [ ] Switch to MDB
+- [ ] Update backup script to use root dn
 
 The following changes should also be added:
 - [ ] Update SLAPD_URLS correctly
