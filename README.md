@@ -21,6 +21,7 @@ bind_user: Admin user to create. Default='cn=admin,{{ base_root }}'.
 bind_password: Desired password for the admin user.
 base_root: The root context for the directory (eg. dc=moj,dc=com)
 base_users: The context where users are stored (eg. ou=Users,dc=moj,dc=com)
+log_level: The slapd log-level. Default=stats.
 
 # Data import
 import_users_ldif: LDIF file to import from the s3_backups_bucket. This can be set to LATEST to retrieve the latest backup from S3. Default=None (no users)
@@ -39,11 +40,12 @@ Changes that were made manually in production to support go-live should be imple
 - [ ] Set timelimit
 - [ ] Set number of threads
 - [ ] Set cache sizes
-- [ ] Update SLAPD_OPTIONS with logging config
+- [x] Update SLAPD_OPTIONS with logging config
 - [ ] Setup rsyslog for logging
 - [ ] Switch to MDB
 - [ ] Update backup script to use root dn
 - [ ] Add MIS/BO and FS groups to restore process from S3
+- [ ] Overlays
 
 The following changes should also be added:
 - [ ] Update SLAPD_URLS correctly

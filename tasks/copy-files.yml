@@ -14,7 +14,6 @@
     dest: '{{ workspace }}/{{ item }}'
     mode: 0644
   with_items:
-    - db.ldif
     - schema.ldif
     - pwm-schema.ldif
     - context.ldif
