@@ -1,9 +1,0 @@
-dn: olcDatabase={2}hdb,cn=config
-changetype: modify
-add: olcAccess
-olcAccess: {0}to *
-  by dn="cn=pwm-admin,{{ base_users }}" write
-  by dn="cn=admin,{{ base_users }}" write
-  by self write
-  by anonymous auth
-  by * read

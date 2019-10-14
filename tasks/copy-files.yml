@@ -19,7 +19,6 @@
     - context.ldif
     - service-users.ldif
     - test-users.ldif
-    - acl.ldif
 
 - name: (copy-files) Copy backup script
   template:

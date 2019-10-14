@@ -16,13 +16,10 @@
     group: ldap
     mode: 0644
 
-- name: (openldap) Configure database
-  template:
-    src: DB_CONFIG.j2
-    dest: /var/lib/ldap/DB_CONFIG
-    owner: ldap
-    group: ldap
-    mode: 0644
+- name: (openldap) Remove default hdb database
+  file:
+    path: '/etc/openldap/slapd.d/cn=config/olcDatabase={2}hdb.ldif'
+    state: absent
 
 - name: (openldap) Start service on boot
   service:
@@ -43,7 +40,7 @@
     mode: 0644
 
 - name: (openldap) Create database
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/db.ldif'
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/db.ldif'
 
 - name: (openldap) Install schemas
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ item }}'
