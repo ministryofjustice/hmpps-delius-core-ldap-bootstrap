@@ -1,8 +1,16 @@
 ---
 
+- name: (test-users) Copy files from templates
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - test-users.ldif
+
 - name: (test-users) Create performance test users
   when: perf_test_users|default('0')|int > 0
-  shell: 'ldapadd {{ ldap_connection }} -f {{ workspace }}/{{ item.file }}'
+  shell: 'ldapadd {{ ldap_connection }} -f {{ workspace }}/{{ item }}'
   register: create_perf_test_users
   failed_when: create_perf_test_users.rc not in [0,33,68]
   # Allowed return codes:
@@ -12,4 +20,4 @@
   environment:
     bind_password: '{{ bind_password }}'
   with_items:
-    - { file: test-users.ldif }
+    - test-users.ldif

@@ -29,9 +29,6 @@
     state: present
   become: yes
 
-- name: Copy files
-  include: copy-files.yml
-
 - name: Install OpenLDAP
   include: openldap.yml
 

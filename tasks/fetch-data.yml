@@ -117,6 +117,12 @@
         # Fix to handle incorrect context set on aliasedobjectname attributes:
         - { regexp: '(?i)(aliasedobjectname:.+?,cn=ndRoleCatalogue,).+?\n', replace: '\1{{ base_users }}\n' }
 
+    - name: (fetch-data.users) Copy sort script
+      copy:
+        src: ldif-sort.sh
+        dest: '{{ workspace }}/ldif-sort.sh'
+        mode: u+x
+
     - name: (fetch-data.users) Sort LDIF hierarchically
       shell: >
         cp {{ workspace }}/{{ import_users_ldif }} {{ workspace }}/{{ import_users_ldif }}.orig;

@@ -1,5 +1,13 @@
 ---
 
+- name: (import-data) Copy service-users template
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - service-users.ldif
+
 - name: (import-data) Import roles, groups and service users
   shell: 'ldapadd {{ ldap_connection }} -f {{ workspace }}/{{ item.file }}'
   environment:
