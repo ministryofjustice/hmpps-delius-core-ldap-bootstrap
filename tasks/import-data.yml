@@ -5,7 +5,6 @@
   environment:
     bind_password: '{{ bind_password }}'
   with_items:
-    - { file: context.ldif }
     - { file: nd_role_catalogue.ldif }
     - { file: nd_role_groups.ldif }
     - { file: service-users.ldif }

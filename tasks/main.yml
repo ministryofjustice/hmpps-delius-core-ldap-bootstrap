@@ -35,7 +35,7 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
-- name: Import schema
+- name: Import delius schemas
   include: schema.yml
 
 - name: Fetch and parse data for import

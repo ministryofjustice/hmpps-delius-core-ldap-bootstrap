@@ -17,15 +17,3 @@ olcTimeLimit: time.soft={{ time_limit | default('30') }} time.hard={{ time_limit
 olcDbIndex: ou,cn,mail,surname,givenName eq,pres,sub
 olcDbIndex: objectClass,uniqueMember,uid,member,entryUUID eq,pres
 olcDbMaxSize: {{ db_max_size | default('53687091200') }}
-
-# Add root dn
-dn: {{ base_root }}
-objectClass: domain
-dc: {{ base_root | regex_replace('^.+?=(.+?),.*$', '\\1') }}
-
-# Add admin user
-dn: {{ bind_user }}
-objectClass: person
-cn: {{ base_root | regex_replace('^.+?=(.+?),.*$', '\\1') }}
-sn: {{ base_root | regex_replace('^.+?=(.+?),.*$', '\\1') }}
-userPassword: {{ bind_password_hash.stdout }}

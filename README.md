@@ -43,7 +43,7 @@ Changes that were made manually in production to support go-live should be imple
 - [x] Fix ACL
 - [x] Set timelimit
 - [ ] Set number of threads
-- [ ] Set cache sizes
+- [x] ~~Set cache sizes~~ No longer required
 - [x] Update SLAPD_OPTIONS with logging config
 - [ ] Setup rsyslog for logging
 - [x] Switch to MDB
@@ -52,7 +52,7 @@ Changes that were made manually in production to support go-live should be imple
 - [ ] Overlays
 
 The following changes should also be added:
-- [ ] Update SLAPD_URLS correctly
+- [x] Update SLAPD_URLS correctly
 - [ ] Push logs to cloudwatch
 - [ ] Push monitor db info to cloudwatch
 - [ ] Separate ldap restore into it's own job
