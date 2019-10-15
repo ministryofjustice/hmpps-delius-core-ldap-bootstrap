@@ -26,6 +26,7 @@ log_level: The slapd log-level. Default=stats.
 # LDAP tuning
 time_limit: LDAP query timout, in seconds. Default=30.
 db_max_size: Max size of the ldap mdb database, in bytes. Default=50GB.
+num_threads: Number of threads to use. Default=number of processors.
 
 # Data import
 import_users_ldif: LDIF file to import from the s3_backups_bucket. This can be set to LATEST to retrieve the latest backup from S3. Default=None (no users)
@@ -42,7 +43,7 @@ Changes that were made manually in production to support go-live should be imple
 - [x] Add indexes
 - [x] Fix ACL
 - [x] Set timelimit
-- [ ] Set number of threads
+- [x] Set number of threads
 - [x] ~~Set cache sizes~~ No longer required
 - [x] Update SLAPD_OPTIONS with logging config
 - [ ] Setup rsyslog for logging

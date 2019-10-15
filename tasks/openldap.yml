@@ -33,11 +33,17 @@
     bind_password: '{{ bind_password }}'
   register: bind_password_hash
 
-- name: (openldap) Copy db.ldif template
+- name: (openldap) Copy LDIFs
   template:
-    src: 'db.ldif.j2'
-    dest: '{{ workspace }}/db.ldif'
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
     mode: 0644
+  with_items:
+    - config.ldif
+    - db.ldif
+
+- name: (openldap) Update config
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/config.ldif'
 
 - name: (openldap) Create database
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/db.ldif'

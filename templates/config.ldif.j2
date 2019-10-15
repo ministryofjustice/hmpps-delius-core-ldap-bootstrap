@@ -1,0 +1,4 @@
+dn: cn=config
+changetype: replace
+replace: olcThreads
+olcThreads: {{ num_threads | default(processor_count.stdout) }}

@@ -17,6 +17,10 @@
     dss_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/dss_user', region=region) }}"
     performance_test_user_password: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/performance_test_user_password', region=region) }}"
 
+- name: (facts) Get processor count
+  shell: cat /proc/cpuinfo | grep processor | wc -l
+  register: processor_count
+
 - name: (facts) Get the name of the latest backup
   when: import_users_ldif == 'LATEST'
   shell: "aws s3 ls s3://{{ s3_backups_bucket }}/ldap/ --recursive | sort | tail -n 1 | awk '{print $4}'"
