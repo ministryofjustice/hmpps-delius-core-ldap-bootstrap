@@ -58,6 +58,6 @@
     - java.ldif
 
 - name: (openldap) Install overlays
-  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ item }}'
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/{{ item }}'
   with_items:
     - memberOf.ldif
