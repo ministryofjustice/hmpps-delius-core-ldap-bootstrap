@@ -49,14 +49,13 @@ Changes that were made manually in production to support go-live should be imple
 - [x] Setup rsyslog for logging
 - [x] Switch to MDB
 - [x] Update backup script to use root dn
-- [ ] Add MIS/BO and FS groups to restore process from S3
-- [ ] Overlays
+- [x] Overlays
 
 The following changes should also be added:
 - [x] Update SLAPD_URLS correctly
 - [ ] Push logs to cloudwatch
 - [ ] Push monitor db info to cloudwatch
-- [ ] Separate ldap restore into it's own job
+- [ ] Separate ldap restore into it's own job, and include MIS FS groups
 - [ ] Make backup frequency configurable (currently is daily, hourly would be better)
 - [ ] Add replicas/standbys or configure multi-master
 - [ ] Add cron job or overlay to implement user start/end dates
