@@ -53,8 +53,8 @@ Changes that were made manually in production to support go-live should be imple
 
 The following changes should also be added:
 - [x] Update SLAPD_URLS correctly
-- [ ] Push logs to cloudwatch
-- [ ] Push monitor db info to cloudwatch
+- [x] Push logs to cloudwatch
+- [x] Push monitor db info to cloudwatch
 - [ ] Separate ldap restore into it's own job, and include MIS FS groups
 - [ ] Make backup frequency configurable (currently is daily, hourly would be better)
 - [ ] Add replicas/standbys or configure multi-master

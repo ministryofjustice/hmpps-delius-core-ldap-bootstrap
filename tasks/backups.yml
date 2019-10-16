@@ -1,6 +1,6 @@
 ---
 
-- name: (copy-files) Copy backup script
+- name: (backups) Copy backup script
   template:
     src: 'backup_ldap.sh.j2'
     dest: '/usr/bin/backup_ldap'

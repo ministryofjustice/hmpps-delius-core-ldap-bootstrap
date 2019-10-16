@@ -1,0 +1,27 @@
+---
+
+- name: (monitoring) Apply rsyslog config file
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.d/slapd.conf
+
+- name: (monitoring) Restart rsyslog service
+  service:
+    name: rsyslog
+    state: restarted
+
+- name: (monitoring) Create script for pushing monitor db info to cloudwatch
+  template:
+    src: update_ldap_metrics.sh.j2
+    dest: /usr/bin/update_ldap_metrics
+    mode: u+x
+
+- name: (monitoring) Create a cron job to update metrics every minute
+  cron:
+    name: Update LDAP metrics
+    job: update_ldap_metrics
+    minute: *
+    hour: *
+    day: *
+    month: *
+    weekday: *
