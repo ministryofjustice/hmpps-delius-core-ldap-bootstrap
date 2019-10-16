@@ -2,13 +2,12 @@
 
 - name: (backups) Copy backup script
   template:
-    src: 'backup_ldap.sh.j2'
-    dest: '/usr/bin/backup_ldap'
+    src: backup_ldap.sh.j2
+    dest: /usr/bin/backup_ldap
     mode: u+x
 
 - name: (backups) Create a cron job to perform daily backups
   cron:
     name: Backup to S3
-    job: 'backup_ldap'
-    # TODO: add a var for backup schedule
-    special_time: daily
+    job: backup_ldap
+    special_time: "{{ backup_frequency | default('hourly') }}"
