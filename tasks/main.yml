@@ -32,6 +32,9 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
+- name: Configure logging
+  include: logging.yml
+
 - name: Import delius schemas
   include: schema.yml
 

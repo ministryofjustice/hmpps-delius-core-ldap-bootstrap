@@ -18,7 +18,7 @@
     performance_test_user_password: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/performance_test_user_password', region=region) }}"
 
 - name: (facts) Get processor count
-  shell: cat /proc/cpuinfo | grep processor | wc -l
+  shell: grep -c processor /proc/cpuinfo
   register: processor_count
 
 - name: (facts) Get the name of the latest backup

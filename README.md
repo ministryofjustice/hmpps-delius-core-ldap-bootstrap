@@ -46,7 +46,7 @@ Changes that were made manually in production to support go-live should be imple
 - [x] Set number of threads
 - [x] ~~Set cache sizes~~ No longer required
 - [x] Update SLAPD_OPTIONS with logging config
-- [ ] Setup rsyslog for logging
+- [x] Setup rsyslog for logging
 - [x] Switch to MDB
 - [x] Update backup script to use root dn
 - [ ] Add MIS/BO and FS groups to restore process from S3
