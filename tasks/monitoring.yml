@@ -20,8 +20,8 @@
   cron:
     name: Update LDAP metrics
     job: update_ldap_metrics
-    minute: *
-    hour: *
-    day: *
-    month: *
-    weekday: *
+    minute: '*'
+    hour: '*'
+    day: '*'
+    month: '*'
+    weekday: '*'
