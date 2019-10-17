@@ -10,9 +10,3 @@ changetype: add
 objectClass: olcOverlayConfig
 objectClass: olcSyncProvConfig
 olcOverlay: syncprov
-
-# Configure mdb database for mirror-mode
-dn: olcDatabase={1}mdb,cn=config
-changetype:modify
-add: olcMirrorMode
-olcMirrorMode: TRUE

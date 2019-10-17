@@ -37,4 +37,7 @@ $(echo $IP_ADDRESSES | awk '{print "olcSyncRepl: rid=" NR "\n\
   searchbase=\"{{ base_root }}\"\n\
   type=refreshAndPersist\n\
   retry=\"5 5 300 +\""}')
+-
+replace: olcMirrorMode
+olcMirrorMode: TRUE
 EOF
