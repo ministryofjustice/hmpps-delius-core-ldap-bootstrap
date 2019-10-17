@@ -57,7 +57,7 @@ The following changes should also be added:
 - [x] Push logs to cloudwatch
 - [x] Push monitor db info to cloudwatch
 - [x] Make backup frequency configurable (currently is daily, hourly would be better)
-- [ ] Add replicas/standbys or configure multi-master
+- [x] Add replicas/standbys or configure multi-master
 - [ ] Add cron job or overlay to implement user start/end dates
 
 Dependencies

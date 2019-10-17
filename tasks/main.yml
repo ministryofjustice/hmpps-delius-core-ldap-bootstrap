@@ -32,9 +32,6 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
-- name: Enable replication
-  include: replication.yml
-
 - name: Configure monitoring and logging
   include: monitoring.yml
 
@@ -50,13 +47,8 @@
 - name: Create test users
   include: test-users.yml
 
-# TODO:
-#- name: Setup replication
-#  include: replication.yml
-
-# TODO:
-#- name: Add user start/end date handling
-#  include: user-expiry.yml
+- name: Enable replication
+  include: replication.yml
 
 - name: Enable regular backups
   include: backups.yml
