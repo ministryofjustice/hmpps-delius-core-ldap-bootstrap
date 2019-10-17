@@ -32,6 +32,9 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
+- name: Enable replication
+  include: replication.yml
+
 - name: Configure monitoring and logging
   include: monitoring.yml
 

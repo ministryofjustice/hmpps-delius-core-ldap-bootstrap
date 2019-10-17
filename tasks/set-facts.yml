@@ -21,6 +21,13 @@
   shell: grep -c processor /proc/cpuinfo
   register: processor_count
 
+- name: (facts) Get IP address of the current instance
+  shell: >
+    aws ec2 describe-instances --output text --region {{ region }}
+    --query 'Reservations[*].Instances[*].[PrivateIpAddress]'
+    --instance-ids $INSTANCE_ID
+  register: private_ip
+
 - name: (facts) Get the name of the latest backup
   when: import_users_ldif == 'LATEST'
   shell: "aws s3 ls s3://{{ s3_backups_bucket }}/ldap/ --recursive | sort | tail -n 1 | awk '{print $4}'"

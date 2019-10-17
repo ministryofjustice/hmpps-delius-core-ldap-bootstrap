@@ -1,0 +1,30 @@
+---
+
+- name: (replication) Copy LDIFs
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - replication.ldif
+
+- name: (replication) Update config to enable syncprov replication
+  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/{{ item }}'
+  with_items:
+    - replication.ldif
+
+- name: (replication) Copy script for updating replicas
+  template:
+    src: update_replicas.sh.j2
+    dest: /usr/bin/update_replicas
+    mode: u+x
+
+- name: (replication) Scheduled task to keep replica details up-to-date, every minute
+  cron:
+    name: Update replica details
+    job: update_replicas
+    minute: '*'
+    hour: '*'
+    day: '*'
+    month: '*'
+    weekday: '*'

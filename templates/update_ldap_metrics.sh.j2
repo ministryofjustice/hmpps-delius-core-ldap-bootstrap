@@ -13,7 +13,7 @@ function push_metric()
     value=$(ldapsearch -LLL -Q -Y EXTERNAL -H ldapi:/// -b "${ldap_base}" "${ldap_attr}" | grep -oP "^${ldap_attr}: \K.*")
     echo "$name=$value"
     aws cloudwatch put-metric-data \
-        --region eu-west-2 \
+        --region {{ region }} \
         --dimensions InstanceId=${INSTANCE_ID} \
         --namespace "LDAP" \
         --metric-name "${name}" \
