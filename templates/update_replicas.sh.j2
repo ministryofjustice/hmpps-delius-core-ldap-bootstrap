@@ -32,7 +32,7 @@ replace: olcSyncRepl
 $(echo "$IP_ADDRESSES" | awk '{print "olcSyncRepl: rid=" NR "\n\
   provider=ldap://" $s ":{{ ldap_port }}\n\
   bindmethod=simple\n\
-  binddn=\"{{ bind_user }}\"\n\
+  binddn=\"cn=root,{{ base_root }}\"\n\
   credentials={{ bind_password }}\n\
   searchbase=\"{{ base_root }}\"\n\
   type=refreshAndPersist\n\
