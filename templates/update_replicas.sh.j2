@@ -5,10 +5,10 @@ set +x
 # Fetch the latest list of private IP addresses for the LDAP ASG
 IP_ADDRESSES=$(aws ec2 describe-instances --output text --region {{ region }} \
                --query 'Reservations[*].Instances[*].[PrivateIpAddress]' \
-               --filters 'Name=tag:aws:autoscaling:groupName,Values={{ environment_name }}-ldap' | sort -n)
+               --filters 'Name=tag:aws:autoscaling:groupName,Values={{ environment_name }}-ldap' | tr ' ' '\n' | sort -n)
 
 # Check if any server ids have changed
-AWS_SERVER_IDS=$(echo $IP_ADDRESSES | awk '{print "olcServerID: " NR " ldap://" $s ":{{ ldap_port }}"}')
+AWS_SERVER_IDS=$(echo "$IP_ADDRESSES" | awk '{print "olcServerID: " NR " ldap://" $s ":{{ ldap_port }}"}')
 LDAP_SERVER_IDS=$(ldapsearch -Q -Y EXTERNAL -H ldapi:/// -b 'cn=config' 'olcServerID' | grep '^olcServerID:')
 if [ "$AWS_SERVER_IDS" == "$LDAP_SERVER_IDS" ]
 then
@@ -29,7 +29,7 @@ ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
 dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 replace: olcSyncRepl
-$(echo $IP_ADDRESSES | awk '{print "olcSyncRepl: rid=" NR "\n\
+$(echo "$IP_ADDRESSES" | awk '{print "olcSyncRepl: rid=" NR "\n\
   provider=ldap://" $s ":{{ ldap_port }}\n\
   bindmethod=simple\n\
   binddn=\"{{ bind_user }}\"\n\
