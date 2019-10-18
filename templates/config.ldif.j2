@@ -1,4 +1,4 @@
 dn: cn=config
 changetype: modify
 replace: olcThreads
-olcThreads: {{ num_threads | default(processor_count.stdout) }}
+olcThreads: {{ num_threads | default([16, (processor_count.stdout|int)*2] | max) }}
