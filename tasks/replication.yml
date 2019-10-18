@@ -1,18 +1,5 @@
 ---
 
-- name: (replication) Copy LDIFs
-  template:
-    src: '{{ item }}.j2'
-    dest: '{{ workspace }}/{{ item }}'
-    mode: 0644
-  with_items:
-    - replication.ldif
-
-- name: (replication) Update config to enable syncprov replication
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/{{ item }}'
-  with_items:
-    - replication.ldif
-
 - name: (replication) Copy script for updating replicas
   template:
     src: update_replicas.sh.j2

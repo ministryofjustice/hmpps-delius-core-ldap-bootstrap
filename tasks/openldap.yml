@@ -41,7 +41,7 @@
   with_items:
     - config.ldif
     - db.ldif
-    - memberOf.ldif
+    - overlays.ldif
 
 - name: (openldap) Update config
   shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/config.ldif'
@@ -56,8 +56,9 @@
     - nis.ldif
     - inetorgperson.ldif
     - java.ldif
+    - ppolicy.ldif
 
 - name: (openldap) Install overlays
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/{{ item }}'
   with_items:
-    - memberOf.ldif
+    - overlays.ldif
