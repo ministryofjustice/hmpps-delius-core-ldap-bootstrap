@@ -1,0 +1,24 @@
+---
+
+- name: (user-expiry) Copy LDIFs
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - password-policy.ldif
+
+- name: (user-expiry) Create default password policy
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/password-policy.ldif'
+
+- name: (user-expiry) Copy user expiry script
+  template:
+    src: user_expiry.sh.j2
+    dest: /usr/bin/user_expiry
+    mode: u+x
+
+- name: (user-expiry) Scheduled task to lock users after end date
+  cron:
+    name: Expire LDAP users
+    job: user_expiry
+    special_time: "daily"

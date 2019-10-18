@@ -47,6 +47,9 @@
 - name: Create test users
   include: test-users.yml
 
+- name: Handle start/end date attributes
+  include: user-expiry.yml
+
 - name: Enable replication
   include: replication.yml
 

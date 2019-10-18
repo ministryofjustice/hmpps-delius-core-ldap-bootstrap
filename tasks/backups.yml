@@ -6,7 +6,7 @@
     dest: /usr/bin/backup_ldap
     mode: u+x
 
-- name: (backups) Create a cron job to perform daily backups
+- name: (backups) Create a cron job to perform scheduled backups
   cron:
     name: Backup to S3
     job: backup_ldap
