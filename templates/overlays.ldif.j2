@@ -5,7 +5,7 @@ objectClass: olcModuleList
 olcModulePath: /usr/lib64/openldap
 olcModuleLoad: memberof.la
 olcModuleLoad: refint.la
-olcModuleLoad: ppolicy.lda
+olcModuleLoad: ppolicy.la
 olcModuleLoad: syncprov.la
 
 # Apply memberof overlay for dynamic group membership
@@ -27,13 +27,14 @@ olcOverlay: {1}refint
 olcRefintAttribute: memberof member manager owner
 
 # Enable ppolicy overlay for password policy constraints and user expiry
+# Settings enforce hashed passwords, return detailed messages about locked users, and ensure updates (eg. password attempt counts) are forwarded to other nodes in the cluster
 dn: olcOverlay={2}ppolicy,olcDatabase={2}mdb,cn=config
 objectClass: olcOverlayConfig
 objectClass: olcPPolicyConfig
 olcOverlay: {2}ppolicy
-olcPPolicyDefault: cn=passwordDefault,ou=Policies,{{ base_root }}
-olcPPolicyHashCleartext: FALSE
-olcPPolicyUseLockout: FALSE
+olcPPolicyDefault: cn=default,ou=Policies,{{ base_root }}
+olcPPolicyHashCleartext: TRUE
+olcPPolicyUseLockout: TRUE
 olcPPolicyForwardUpdates: TRUE
 
 # Enable syncprov overlay for replication
