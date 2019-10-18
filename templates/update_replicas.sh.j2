@@ -9,7 +9,7 @@ IP_ADDRESSES=$(aws ec2 describe-instances --output text --region {{ region }} \
 
 # Check if any server ids have changed
 AWS_SERVER_IDS=$(echo "$IP_ADDRESSES" | awk '{print "olcServerID: " NR " ldap://" $s ":{{ ldap_port }}/"}')
-LDAP_SERVER_IDS=$(ldapsearch -Q -Y EXTERNAL -H ldapi:/// -b 'cn=config' 'olcServerID' | grep '^olcServerID:')
+LDAP_SERVER_IDS=$(ldapsearch -Q -Y EXTERNAL -H ldapi:/// -s base -b 'cn=config' 'olcServerID' | grep '^olcServerID:')
 if [ "$AWS_SERVER_IDS" == "$LDAP_SERVER_IDS" ]
 then
     echo 'No changes'
