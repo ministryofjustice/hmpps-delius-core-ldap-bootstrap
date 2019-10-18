@@ -26,7 +26,7 @@ log_level: The slapd log-level. Default=stats.
 # LDAP tuning
 time_limit: LDAP query timout, in seconds. Default=30.
 db_max_size: Max size of the ldap mdb database, in bytes. Default=50GB.
-num_threads: Number of threads to use. Default=number of processors.
+num_threads: Number of threads to use. Default=2*number of processors, or 16 if there are less than 8 processors.
 backup_frequency: How often to backup to S3. Default=hourly.
 
 # Data import
