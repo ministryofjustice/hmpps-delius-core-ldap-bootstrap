@@ -1,17 +1,21 @@
 ---
 
+- name: (import-data) Copy service-users template
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - service-users.ldif
+
 - name: (import-data) Import roles, groups and service users
   shell: 'ldapadd {{ ldap_connection }} -f {{ workspace }}/{{ item.file }}'
   environment:
     bind_password: '{{ bind_password }}'
   with_items:
-    - { file: context.ldif }
     - { file: nd_role_catalogue.ldif }
     - { file: nd_role_groups.ldif }
     - { file: service-users.ldif }
-
-- name: (import-data) Set access for users
-  shell: 'ldapmodify -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/acl.ldif'
 
 - name: (import-data) Import users
   when: import_users_ldif != ''

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set +x
+
+today=$(date '+%Y%m%d000000Z')
+
+# Lock users that are not locked and endDate < today, or startDate > today
+ldapmodify -Q -Y EXTERNAL -H ldapi:// <<EOF
+$(ldapsearch -Q -Y EXTERNAL -H ldapi:// -LLL -s one -b ou={{ base_users }} \
+"(&("'!'"(pwdAccountLockedTime=*))(|(&(endDate=*)("'!'"(endDate>=${today})))(&(startDate=*)("'!'"(startDate<=${today})))))" \
+cn | \
+sed 's/cn: .*/changetype: modify\nreplace: pwdAccountLockedTime\npwdAccountLockedTime: 000001010000Z/')
+EOF
+
+# Unlock users that are locked and endDate >= today and startDate <= today
+ldapmodify -Q -Y EXTERNAL -H ldapi:// <<EOF
+$(ldapsearch -Q -Y EXTERNAL -H ldapi:// -LLL -s one -b ou={{ base_users }} \
+"(&(pwdAccountLockedTime=000001010000Z)(|("'!'"(endDate=*))(endDate>=${today}))(|("'!'"(startDate=*))(startDate<=${today})))" \
+cn | \
+sed 's/cn: .*/changetype: modify\ndelete: pwdAccountLockedTime\npwdAccountLockedTime: 000001010000Z/')
+EOF

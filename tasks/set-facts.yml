@@ -6,19 +6,27 @@
 
 - name: (facts) Set facts
   set_fact:
-    bind_user: "{{ bind_user | default('cn=Directory Manager') }}"
+    bind_user: "{{ bind_user | default('cn=admin,'+base_root) }}"
     base_service_users: 'cn=EISUsers,{{ base_users }}'
     base_roles: 'cn=ndRoleCatalogue,{{ base_users }}'
     base_rolegroups: 'cn=ndRoleGroups,{{ base_users }}'
+    ldap_connection: '-H ldap:/// -D "cn=root,{{ base_root }}" -w ${bind_password}'
     casenotes_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/casenotes_user', region=region) }}"
     oasys_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/oasys_user', region=region) }}"
     iaps_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/iaps_user', region=region) }}"
     dss_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/dss_user', region=region) }}"
     performance_test_user_password: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/performance_test_user_password', region=region) }}"
 
-- name: (facts) Set connection string
-  set_fact:
-    ldap_connection: '-H {{ ldap_protocol }}://localhost:{{ ldap_port }} -D "{{ bind_user }}" -w ${bind_password}'
+- name: (facts) Get processor count
+  shell: grep -c processor /proc/cpuinfo
+  register: processor_count
+
+- name: (facts) Get IP address of the current instance
+  shell: >
+    aws ec2 describe-instances --output text --region {{ region }}
+    --query 'Reservations[*].Instances[*].[PrivateIpAddress]'
+    --instance-ids $INSTANCE_ID
+  register: private_ip
 
 - name: (facts) Get the name of the latest backup
   when: import_users_ldif == 'LATEST'

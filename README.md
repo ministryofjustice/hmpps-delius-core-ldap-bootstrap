@@ -21,6 +21,13 @@ bind_user: Admin user to create. Default='cn=admin,{{ base_root }}'.
 bind_password: Desired password for the admin user.
 base_root: The root context for the directory (eg. dc=moj,dc=com)
 base_users: The context where users are stored (eg. ou=Users,dc=moj,dc=com)
+log_level: The slapd log-level. Default=stats.
+
+# LDAP tuning
+time_limit: LDAP query timout, in seconds. Default=30.
+db_max_size: Max size of the ldap mdb database, in bytes. Default=50GB.
+num_threads: Number of threads to use. Default=2*number of processors, or 16 if there are less than 8 processors.
+backup_frequency: How often to backup to S3. Default=hourly.
 
 # Data import
 import_users_ldif: LDIF file to import from the s3_backups_bucket. This can be set to LATEST to retrieve the latest backup from S3. Default=None (no users)

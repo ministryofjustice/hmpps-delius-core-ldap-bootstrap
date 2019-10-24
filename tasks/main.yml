@@ -19,19 +19,23 @@
 - name: Set facts
   include: set-facts.yml
 
-- name: Block LDAP port
-  include: port-block.yml
+- name: (port) Block inbound access on ldap_port until bootstrap is finished
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    source: '!127.0.0.1'
+    destination_port: '{{ ldap_port }}'
+    jump: REJECT
+    state: present
+  become: yes
 
-- name: Install directory server
-  include: install-service.yml
+- name: Install OpenLDAP
+  include: openldap.yml
 
-- name: Copy files
-  include: copy-files.yml
+- name: Configure monitoring and logging
+  include: monitoring.yml
 
-- name: Configure directory server
-  include: config-service.yml
-
-- name: Import schema
+- name: Import delius schemas
   include: schema.yml
 
 - name: Fetch and parse data for import
@@ -43,24 +47,29 @@
 - name: Create test users
   include: test-users.yml
 
-# TODO:
-#- name: Setup replication
-#  include: replication.yml
+- name: Handle start/end date attributes
+  include: user-expiry.yml
 
-# TODO:
-#- name: Add user start/end date handling
-#  include: user-expiry.yml
+- name: Enable replication
+  include: replication.yml
 
 - name: Enable regular backups
   include: backups.yml
-
-- name: Unblock LDAP port
-  include: port-unblock.yml
 
 - name: (main) Remove workspace
   file:
     path: '{{ workspace }}'
     state: absent
+
+- name: (port) Re-enable inbound access on ldap_port
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    source: '!127.0.0.1'
+    destination_port: '{{ ldap_port }}'
+    jump: REJECT
+    state: absent
+  become: yes
 
 - name: (main) set tag to indicate deployed ndelius_version
   ec2_tag:

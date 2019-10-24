@@ -1,8 +1,0 @@
-dn: olcDatabase={2}hdb,cn=config
-changetype: modify
-add: olcAccess
-olcAccess: {0}to dn.sub="{{ base_users }}"
-  by self write
-  by * read
-  by anonymous auth
-  by dn="cn=pwm-admin,{{ base_users }}" write

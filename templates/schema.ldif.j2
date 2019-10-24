@@ -32,8 +32,8 @@ olcAttributeTypes: ( 1.1.1.1.40 NAME 'defaultTeam' SYNTAX 1.3.6.1.4.1.1466.115.1
 olcAttributeTypes: ( 1.1.1.1.41 NAME 'defaultStaff' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 EQUALITY caseIgnoreMatch )
 olcAttributeTypes: ( 1.1.1.1.44 NAME 'defaultPremisesGrouping' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 EQUALITY caseIgnoreMatch )
 olcAttributeTypes: ( 1.1.1.1.45 NAME 'defaultPremises' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 EQUALITY caseIgnoreMatch )
-olcAttributeTypes: ( 1.1.1.1.46 NAME 'startDate' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 EQUALITY caseIgnoreMatch )
-olcAttributeTypes: ( 1.1.1.1.47 NAME 'endDate' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 EQUALITY caseIgnoreMatch )
+olcAttributeTypes: ( 1.1.1.1.46 NAME 'startDate' SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 EQUALITY generalizedTimeMatch ORDERING generalizedTimeOrderingMatch )
+olcAttributeTypes: ( 1.1.1.1.47 NAME 'endDate' SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 EQUALITY generalizedTimeMatch ORDERING generalizedTimeOrderingMatch )
 olcObjectClasses: ( 1.1.1.1.21 NAME 'UserPreferences' SUP top STRUCTURAL MUST cn MAY (
   area $
   autoComplete $

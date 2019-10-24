@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set +x
+
+INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+
+function push_metric()
+{
+    name=$1
+    ldap_base=$2
+    ldap_attr=$3
+    unit=$4
+    value=$(ldapsearch -LLL -Q -Y EXTERNAL -H ldapi:/// -l 1 -s base -b "${ldap_base}" "${ldap_attr}" | grep -oP "^${ldap_attr}: \K.*")
+    echo "$name=$value"
+    aws cloudwatch put-metric-data \
+        --region {{ region }} \
+        --dimensions InstanceID=${INSTANCE_ID},AutoScalingGroupName={{ environment_name }}-ldap \
+        --namespace "LDAP" \
+        --metric-name "${name}" \
+        --value "$value" \
+        --unit ${unit}
+}
+
+push_metric 'CurrentConnections' 'cn=current,cn=connections,cn=monitor' 'monitorCounter' 'Count'
+push_metric 'TotalConnections' 'cn=total,cn=connections,cn=monitor' 'monitorCounter' 'Count'
+push_metric 'Entries' 'cn=entries,cn=statistics,cn=monitor' 'monitorCounter' 'Count'
+push_metric 'Size' 'cn=bytes,cn=statistics,cn=monitor' 'monitorCounter' 'Bytes'
+push_metric 'BindCount' 'cn=bind,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'
+push_metric 'SearchCount' 'cn=search,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'
+push_metric 'ModifyCount' 'cn=modify,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'
+push_metric 'ModRdnCount' 'cn=modrdn,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'
+push_metric 'AddCount' 'cn=add,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'
+push_metric 'DeleteCount' 'cn=delete,cn=operations,cn=monitor' 'monitorOpCompleted' 'Count'

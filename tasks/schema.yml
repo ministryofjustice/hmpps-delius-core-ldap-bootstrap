@@ -1,9 +1,19 @@
 ---
+- name: (schema) Copy files
+  template:
+    src: '{{ item }}.j2'
+    dest: '{{ workspace }}/{{ item }}'
+    mode: 0644
+  with_items:
+    - schema.ldif
+    - pwm-schema.ldif
+    - context.ldif
 
-- name: (schema) Import schemas
+- name: (schema) Import schemas and context
   shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/{{ item }}'
   environment:
     bind_password: '{{ bind_password }}'
   with_items:
     - schema.ldif
     - pwm-schema.ldif
+    - context.ldif

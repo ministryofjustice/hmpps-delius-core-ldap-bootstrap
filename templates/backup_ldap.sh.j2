@@ -3,7 +3,7 @@
 set +x
 
 backupfile=/tmp/backup-$(date +%Y%m%d-%H%M%S).ldif
-bind_password=$(aws ssm get-parameter --region eu-west-2 --with-decryption --name /{{ environment_name }}/{{ project_name }}/apacheds/apacheds/ldap_admin_password | jq -r .Parameter.Value)
+bind_password=$(aws ssm get-parameter --region {{ region }} --with-decryption --name /{{ environment_name }}/{{ project_name }}/apacheds/apacheds/ldap_admin_password | jq -r .Parameter.Value)
 ldapsearch -L {{ ldap_connection }} -b {{ base_root }} '(objectclass=*)' > ${backupfile}
 
 
