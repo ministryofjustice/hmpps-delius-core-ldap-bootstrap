@@ -25,11 +25,12 @@ $AWS_SERVER_IDS
 EOF
 
 # Update the replicas in the database
+CURRENT_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
 dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 replace: olcSyncRepl
-$(echo "$IP_ADDRESSES" | awk '{print "olcSyncRepl: rid=" NR "\n\
+$(echo "$IP_ADDRESSES" | grep -v "$CURRENT_IP_ADDRESS" | awk '{print "olcSyncRepl: rid=" NR "\n\
   provider=ldap://" $s ":{{ ldap_port }}\n\
   bindmethod=simple\n\
   binddn=\"cn=root,{{ base_root }}\"\n\

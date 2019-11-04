@@ -14,7 +14,8 @@ function push_metric()
     echo "$name=$value"
     aws cloudwatch put-metric-data \
         --region {{ region }} \
-        --dimensions InstanceID=${INSTANCE_ID},AutoScalingGroupName={{ environment_name }}-ldap \
+        --dimensions InstanceID=${INSTANCE_ID} \
+        --dimensions AutoScalingGroupName={{ environment_name }}-ldap \
         --namespace "LDAP" \
         --metric-name "${name}" \
         --value "$value" \
