@@ -61,6 +61,7 @@
         # Unwrap lines to make it easier when searching:
         - { regexp: '\n ([^\n])', replace: '\1' }
         # Remove blocks for service users/groups eg. Cxx, SPG, ALF, IAPS-User, IAPS-Group etc
+        - { regexp: '(?i)^dn:.*cn=admin,[\w\W]+?\n\n', replace: '' }
         - { regexp: '(?i)^dn:.*eisusers[\w\W]+?\n\n', replace: '' }
         - { regexp: '(?i)^dn:.*cn=SPG,[\w\W]+?\n\n', replace: '' }
         - { regexp: '(?i)^dn:.*cn=ALF,[\w\W]+?\n\n', replace: '' }
@@ -71,6 +72,9 @@
         # Ensure boolean values are uppercase
         - { regexp: '(?i)^(.+?:\s*?)true\s*?$', replace: '\1TRUE' }
         - { regexp: '(?i)^(.+?:\s*?)false\s*?$', replace: '\1FALSE' }
+        # Ensure timezone is uppercase in date fields
+        - { regexp: '(?i)^(endDate:.*?)z$', replace: '\1Z' }
+        - { regexp: '(?i)^(startDate:.*?)z$', replace: '\1Z' }
 
     - name: (fetch-data.users) Base64-decode any encoded DNs
       # Encoded attributes use double colon, so encoded DNs will look like 'dn:: <base64-value>'
