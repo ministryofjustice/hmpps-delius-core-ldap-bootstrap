@@ -136,25 +136,25 @@ userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apach
 dn: cn=DSS-Group,{{ base_service_users }}
 objectclass: groupOfUniqueNames
 objectclass: top
-uniquemember: cn=dss-user,{{ base_service_users }}
+uniquemember: cn={{ dss_user }},{{ base_service_users }}
 cn: DSS-Group
 
 dn: cn=IAPS-Group,{{ base_service_users }}
 objectclass: groupOfUniqueNames
 objectclass: top
-uniquemember: cn=iaps-user,{{ base_service_users }}
+uniquemember: cn={{ iaps_user }},{{ base_service_users }}
 cn: IAPS-Group
 
 dn: cn=OASYS-Group,{{ base_service_users }}
 objectclass: groupOfUniqueNames
 objectclass: top
-uniquemember: cn=oasys-user,{{ base_service_users }}
+uniquemember: cn={{ oasys_user }},{{ base_service_users }}
 cn: OASYS-Group
 
 dn: cn=CaseNotesAPI-Group,{{ base_service_users }}
 objectclass: groupOfUniqueNames
 objectclass: top
-uniquemember: cn=casenotes-user,{{ base_service_users }}
+uniquemember: cn={{ casenotes_user }},{{ base_service_users }}
 cn: CaseNotesAPI-Group
 
 dn: cn=SPG-Group,{{ base_service_users }}
