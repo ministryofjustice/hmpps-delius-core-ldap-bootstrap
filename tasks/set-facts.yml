@@ -15,6 +15,7 @@
     oasys_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/oasys_user', region=region) }}"
     iaps_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/iaps_user', region=region) }}"
     dss_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/dss_user', region=region) }}"
+    aptracker_user: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/aptracker_user', region=region) }}"
     performance_test_user_password: "{{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/performance_test_user_password', region=region) }}"
 
 - name: (facts) Get processor count
