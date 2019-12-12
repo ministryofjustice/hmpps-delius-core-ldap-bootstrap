@@ -133,6 +133,16 @@ sn: {{ casenotes_user }}
 cn: {{ casenotes_user }}
 userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/casenotes_password', region=region) }}
 
+dn: cn={{ aptracker_user }},{{ base_service_users }}
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+sn: {{ aptracker_user }}
+cn: {{ aptracker_user }}
+businessCategory: read,write
+userPassword: {{ lookup('aws_ssm', '/'+environment_name+'/'+project_name+'/apacheds/apacheds/aptracker_password', region=region) }}
+
 dn: cn=DSS-Group,{{ base_service_users }}
 objectclass: groupOfUniqueNames
 objectclass: top
