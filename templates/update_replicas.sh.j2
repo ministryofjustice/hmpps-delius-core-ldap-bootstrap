@@ -5,7 +5,8 @@ set +x
 # Fetch the latest list of private IP addresses for the LDAP ASG
 IP_ADDRESSES=$(aws ec2 describe-instances --output text --region {{ region }} \
                --query 'Reservations[*].Instances[*].[PrivateIpAddress]' \
-               --filters 'Name=tag:aws:autoscaling:groupName,Values={{ environment_name }}-ldap' | tr ' ' '\n' | sort -n)
+               --filters 'Name=tag:aws:autoscaling:groupName,Values={{ environment_name }}-ldap' \
+               | tr ' ' '\n' | grep -v 'None' | sort -n)
 
 # Check if any server ids have changed
 AWS_SERVER_IDS=$(echo "$IP_ADDRESSES" | awk '{print "olcServerID: " NR " ldap://" $s ":{{ ldap_port }}/"}')
