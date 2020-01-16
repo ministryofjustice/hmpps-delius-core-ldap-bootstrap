@@ -35,17 +35,12 @@
 - name: Configure monitoring and logging
   include: monitoring.yml
 
-- name: Import delius schemas
-  include: schema.yml
+- name: Import schemas, roles/groups etc
+  include: import-rbac.yml
 
-- name: Fetch and parse data for import
-  include: fetch-data.yml
-
-- name: Import roles, groups and users
-  include: import-data.yml
-
-- name: Create test users
-  include: test-users.yml
+- name: Import data from backup
+  when: import_users_ldif != ''
+  include: import-backup.yml
 
 - name: Handle start/end date attributes
   include: user-expiry.yml
