@@ -1,5 +1,13 @@
 ---
 
+- name: (import-rbac) Upload context LDIF
+  template:
+    src: context.ldif.j2
+    dest: '{{ workspace }}/context.ldif'
+
+- name: (import-rbac) Create context
+  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ workspace }}/context.ldif'
+
 - name: (import-rbac) Clone RBAC repo locally
   delegate_to: localhost
   run_once: yes
@@ -10,10 +18,13 @@
     version: '{{ ldap_config.rbac_version }}'
 
 - name: (import-rbac) Import schemas
+  static: no
   include: rbac/import_schemas.yml
 
 - name: (import-rbac) Import roles
+  static: no
   include: rbac/import_roles.yml
 
 - name: (import-rbac) Import users/clients
+  static: no
   include: rbac/import_users.yml
