@@ -18,13 +18,10 @@
     version: '{{ ldap_config.rbac_version }}'
 
 - name: (import-rbac) Import schemas
-  static: no
-  include: rbac/import_schemas.yml
+  include_tasks: rbac/import_schemas.yml
 
 - name: (import-rbac) Import roles
-  static: no
-  include: rbac/import_roles.yml
+  include_tasks: rbac/import_roles.yml
 
 - name: (import-rbac) Import users/clients
-  static: no
-  include: rbac/import_users.yml
+  include_tasks: rbac/import_users.yml
