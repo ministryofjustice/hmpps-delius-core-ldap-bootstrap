@@ -1,0 +1,113 @@
+---
+
+- name: (import-backup) Create directory
+  file:
+    path: '{{ workspace }}/{{ import_users_ldif | dirname }}'
+    state: directory
+    recurse: yes
+
+- name: (import-backup) Download LDIF
+  aws_s3:
+    bucket: '{{ s3_backups_bucket }}'
+    object: '{{ import_users_ldif }}'
+    dest: '{{ workspace }}/{{ import_users_ldif }}'
+    mode: get
+
+- name: (import-backup) Append empty lines to file
+  # This ensures the regexes in the subsequent tasks can take into account the final block in the LDIF
+  shell: "echo '\n\n' >> {{ workspace }}/{{ import_users_ldif }}"
+
+- name: (import-backup) Remove service users and roles, so we can re-add them with the desired details
+  replace:
+    path: '{{ workspace }}/{{ import_users_ldif }}'
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    # Unix line endings
+    - { regexp: '\r', replace: '' }
+    # Unwrap lines to make it easier when searching:
+    - { regexp: '\n ([^\n])', replace: '\1' }
+    # Remove blocks for service users/groups eg. Cxx, SPG, ALF, IAPS-User, IAPS-Group etc
+    - { regexp: '(?i)^dn:.*cn=admin,[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*eisusers[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*cn=SPG,[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*cn=ALF,[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*cn=c\d{2},[\w\W]+?\n\n', replace: '' }
+    # Remove role/group catalogues
+    - { regexp: '(?i)^dn:.*cn=ndrolecatalogue,[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*cn=ndrolegroups,[\w\W]+?\n\n', replace: '' }
+    # Ensure boolean values are uppercase
+    - { regexp: '(?i)^(.+?:\s*?)true\s*?$', replace: '\1TRUE' }
+    - { regexp: '(?i)^(.+?:\s*?)false\s*?$', replace: '\1FALSE' }
+    # Ensure timezone is uppercase in date fields
+    - { regexp: '(?i)^(endDate:.*?)z$', replace: '\1Z' }
+    - { regexp: '(?i)^(startDate:.*?)z$', replace: '\1Z' }
+
+- name: (import-backup) Base64-decode any encoded DNs
+  # Encoded attributes use double colon, so encoded DNs will look like 'dn:: <base64-value>'
+  shell: "perl -MMIME::Base64 -pi -e 's/^dn::\\s*?(.+)$/\"dn: \".decode_base64($1)/ei' {{ workspace }}/{{ import_users_ldif }}"
+
+- name: (import-backup) Remove any mail attributes containing non-ASCII characters, as per RFC4524 # https://tools.ietf.org/html/rfc4524#section-2.16
+  lineinfile:
+    path: '{{ workspace }}/{{ import_users_ldif }}'
+    regexp: '^mail::'
+    state: absent
+
+- name: (import-backup) Remove any parent entries
+  replace:
+    path: '{{ workspace }}/{{ import_users_ldif }}'
+    regexp: "(?i)^dn: {{ item }}[\\w\\W]+?\n\n"
+    replace: ''
+  with_items: "{{ import_users_ldif_base_users.split(',') }}"
+
+- name: (import-backup) Replace context values
+  replace:
+    path: '{{ workspace }}/{{ import_users_ldif }}'
+    regexp: "{{ import_users_ldif_base_users.split(',') | join('\\s*?,\\s*?') }}"
+    replace: '{{ base_users }}'
+
+- name: (import-backup) Remove Oracle-specific stuff
+  when: sanitize_oid_ldif
+  replace:
+    path: '{{ workspace }}/{{ import_users_ldif }}'
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    # Remove oracle default users:
+    - { regexp: '(?i)^dn:.*cn=orcladmin,[\w\W]+?\n\n', replace: '' }
+    - { regexp: '(?i)^dn:.*cn=public,[\w\W]+?\n\n', replace: '' }
+    # Replace oracle start/end date attributes with our own:
+    - { regexp: '(?i)^orclActiveStartDate(:{1,2}) ', replace: 'startDate\1 ' }
+    - { regexp: '(?i)^orclActiveEndDate(:{1,2}) ', replace: 'endDate\1 ' }
+    # Remove oracle objectclasses:
+    - { regexp: '(?i)^objectclass: orcl.+?\n', replace: '' }
+    # Remove oracle attributes:
+    - { regexp: '(?i)^orcl.+?\n', replace: '' }
+    - { regexp: '(?i)^authpassword.+?\n', replace: '' }
+    - { regexp: '(?i)^krbprincipalname.+?\n', replace: '' }
+    # Fix to handle incorrect context set on aliasedobjectname attributes:
+    - { regexp: '(?i)(aliasedobjectname:.+?,cn=ndRoleCatalogue,).+?\n', replace: '\1{{ base_users }}\n' }
+
+- name: (import-backup) Copy sort script
+  copy:
+    src: ldif-sort.sh
+    dest: '{{ workspace }}/ldif-sort.sh'
+    mode: u+x
+
+- name: (import-backup) Sort LDIF hierarchically
+  shell: >
+    cp {{ workspace }}/{{ import_users_ldif }} {{ workspace }}/{{ import_users_ldif }}.orig;
+    cat {{ workspace }}/{{ import_users_ldif }} | {{ workspace }}/ldif-sort.sh > {{ workspace }}/{{ import_users_ldif }}-sorted &&
+    mv {{ workspace }}/{{ import_users_ldif }}-sorted {{ workspace }}/{{ import_users_ldif }}
+
+- name: (import-backup) Import backup file
+  when: import_users_ldif != ''
+  shell: 'time ldapadd {{ ldap_connection }} -c -v -f {{ workspace }}/{{ import_users_ldif }} > /var/log/import_users.log 2>&1'
+  register: import_users_from_backup
+  failed_when: import_users_from_backup.rc not in [0,33,68]
+  # Allowed return codes:
+  # 0=SUCCESS
+  # 33=ALIAS_PROBLEM (invalid role association which should be ignored)
+  # 68=ENTRY_EXISTS (duplicate entries should be ignored)
+  environment:
+    bind_password: '{{ bind_password }}'
