@@ -32,6 +32,9 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
+- name: Install schemas
+  include: schemas.yml
+
 - name: Handle start/end date attributes
   include: user-expiry.yml
 
