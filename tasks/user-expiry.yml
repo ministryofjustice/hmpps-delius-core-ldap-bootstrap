@@ -1,21 +1,5 @@
 ---
 
-- name: (user-expiry) Copy LDIFs
-  template:
-    src: '{{ item }}.j2'
-    dest: '{{ workspace }}/{{ item }}'
-    mode: 0644
-  with_items:
-    - password-policy.ldif
-
-- name: (user-expiry) Create default password policy
-  shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -c -f {{ workspace }}/password-policy.ldif'
-  register: create_policy
-  failed_when: create_policy.rc not in [0,68]
-  # Allowed return codes:
-  # 0=SUCCESS
-  # 68=ENTRY_EXISTS (duplicate entries should be ignored)
-
 - name: (user-expiry) Copy user expiry script
   template:
     src: user_expiry.sh.j2
