@@ -32,18 +32,14 @@
 - name: Install OpenLDAP
   include: openldap.yml
 
-- name: Configure monitoring and logging
-  include: monitoring.yml
-
-- name: Import schemas, roles/groups etc
-  include: import-rbac.yml
-
-- name: Import data from backup
-  when: import_users_ldif != ''
-  include: import-backup.yml
+- name: Install schemas
+  include: schemas.yml
 
 - name: Handle start/end date attributes
   include: user-expiry.yml
+
+- name: Configure monitoring and logging
+  include: monitoring.yml
 
 - name: Enable replication
   include: replication.yml
