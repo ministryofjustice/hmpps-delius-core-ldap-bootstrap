@@ -47,7 +47,7 @@ class MyHandler(BaseHTTPRequestHandler):
     Leader election is performed using a simple bully algorithm. This works by always electing the longest running
     instance as the primary. This ensures we have a deterministic way of always knowing which instance is primary, and
     ensures that any new instance that is added to the cluster doesn't trigger an immediate failover.
-    See
+    See: https://en.wikipedia.org/wiki/Leader_election
     """
 
     start_time = time.time()
