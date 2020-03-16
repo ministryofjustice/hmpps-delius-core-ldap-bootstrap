@@ -1,4 +1,17 @@
-import math
+"""Primary Instance Election
+
+Runs a HTTP server exposing a 'GET /is-primary' endpoint, which will return a 200 response for only a single instance
+in a cluster (the primary instance), and a 500 response for any other (non-primary) instance. A load-balancer can
+then route all traffic to this instance, and any non-primary instances can act as replicas. If the primary instance
+fails, the '/is-primary' method will begin returning a 500 response and another instance will immediately start
+returning a 200 response. This means the service can automatically failover to the new primary with minimal delay.
+
+Leader election is performed using a simple bully algorithm. This works by always electing the longest running
+instance as the primary. This ensures we have a deterministic way of always knowing which instance is primary, and
+ensures that any new instance that is added to the cluster doesn't trigger an immediate failover.
+See: https://en.wikipedia.org/wiki/Leader_election
+"""
+
 import socket
 import socketserver
 import time
@@ -36,20 +49,6 @@ def get_instance_ips():
 
 
 class MyHandler(BaseHTTPRequestHandler):
-    """HTTP request handler.
-
-    This handler exposes an endpoint of 'GET /is-primary', which will return a 200 response for only a single instance
-    in a cluster (the primary instance), and a 500 response for any other (non-primary) instance. A load-balancer can
-    then route all traffic to this instance, and any non-primary instances can act as replicas. If the primary instance
-    fails, the '/is-primary' method will begin returning a 500 response and another instance will immediately start
-    returning a 200 response. This means the service can automatically failover to the new primary with minimal delay.
-
-    Leader election is performed using a simple bully algorithm. This works by always electing the longest running
-    instance as the primary. This ensures we have a deterministic way of always knowing which instance is primary, and
-    ensures that any new instance that is added to the cluster doesn't trigger an immediate failover.
-    See: https://en.wikipedia.org/wiki/Leader_election
-    """
-
     start_time = time.time()
     print(f'Starting HTTPServer with id={start_time} ...')
 
