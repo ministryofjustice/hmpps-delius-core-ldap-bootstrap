@@ -78,7 +78,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     print(f'Unable to get id for ip={instance_ip}', e)
                     pass
             # Return 200 if current server is the primary (has earliest start time), otherwise return 500
-            self.send_response_with_body(200 if math.isclose(min_start_time, self.start_time) else 500)
+            self.send_response_with_body(200 if abs(min_start_time - self.start_time) < 1e-06 else 500)
 
         else:
             self.send_response_with_body(404)
