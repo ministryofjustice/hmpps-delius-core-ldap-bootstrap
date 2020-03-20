@@ -1,44 +1,104 @@
 #!/usr/bin/env bash
-
+#
+# This script fetches a list of instances in the LDAP auto-scaling group using the AWS CLI, then updates the local LDAP
+# to ensure the stored Server IDs are correct to support multi-master replication.
+#
+# There are two places this information is required by OpenLDAP:
+# 1. cn=config
+#     All ServerIDs must be stored on the cn=config entry, in the multi-valued olcServerId attribute. This attribute
+#     follows a format of 'olcServerID: <ServerId> <Host>'.
+#     eg. olcServerId: 1 ldap://ldap1.com:636
+#         olcServerId: 2 ldap://ldap2.com:636
+# 2. olcDatabase=mdb,cn=config
+#     The server details must also be stored on the olcDatabase entry, in the multi-valued olcSyncRepl attribute. This
+#     attribute contains replication config, such as credentials for connecting to the replica server.
+#     Note: There should not be a value containing details for the current server.
+#
+# For more information on configuring OpenLDAP multi-master replication:
+# 1. https://mishikal.wordpress.com/2019/04/23/configuring-mmr-using-delta-syncrepl-in-openldap-updating-an-existing-standalone-configuration/
+# 2. https://linux.die.net/man/5/slapd.conf
+#
 set +x
 
-# Fetch the latest list of private IP addresses for the LDAP ASG
-IP_ADDRESSES=$(aws ec2 describe-instances --output text --region {{ region }} \
-               --query 'Reservations[*].Instances[*].[PrivateIpAddress]' \
-               --filters 'Name=tag:aws:autoscaling:groupName,Values={{ environment_name }}-ldap' \
-               | tr ' ' '\n' | grep -v 'None' | sort -n)
+[ -z "${region}" ]           && region='{{ region }}'
+[ -z "${environment_name}" ] && environment_name='{{ environment_name }}'
+[ -z "${ldap_port}" ]        && ldap_port='{{ ldap_port }}'
+[ -z "${base_root}" ]        && base_root='{{ base_root }}'
+[ -z "${bind_password}" ]    && bind_password='{{ bind_password }}'
 
-# Check if any server ids have changed
-AWS_SERVER_IDS=$(echo "$IP_ADDRESSES" | awk '{print "olcServerID: " NR " ldap://" $s ":{{ ldap_port }}/"}')
-LDAP_SERVER_IDS=$(ldapsearch -Q -Y EXTERNAL -H ldapi:/// -l 1 -s base -b 'cn=config' 'olcServerID' | grep '^olcServerID:')
-if [ "$AWS_SERVER_IDS" == "$LDAP_SERVER_IDS" ]
-then
+
+# Fetch the latest list of running instances from the ASG
+# Returns a line for each instance, containing the tab-separated Instance ID and IP address
+INSTANCES=$(aws ec2 describe-instances --output text --region "${region}" \
+            --query 'Reservations[*].Instances[*].[InstanceId,PrivateIpAddress]' \
+            --filters "Name=tag:aws:autoscaling:groupName,Values=${environment_name}-ldap" \
+                      'Name=instance-state-name,Values=running')
+echo "INSTANCES:
+$INSTANCES"
+
+# Get the current olcServerID values stored in LDAP
+CURRENT_SERVER_IDS=$(ldapsearch -Q -Y EXTERNAL -H ldapi:/// -l 1 -s base -b 'cn=config' 'olcServerID' |\
+                      grep '^olcServerID:' | sort)
+echo "CURRENT_SERVER_IDS:
+$CURRENT_SERVER_IDS"
+
+# Construct the olcServerID and olcSyncRepl values from the AWS instance details
+CURRENT_IP_ADDRESS=$(curl --silent http://169.254.169.254/latest/meta-data/local-ipv4)
+IFS=$'\n'; for instance in $INSTANCES; do
+  instance_id=$(echo "$instance" | sed -E 's/i-(.*)	.*/\1/')
+  instance_ip=$(echo "$instance" | sed -E 's/i-.*	(.*)/\1/')
+  # The ServerID should be an integer < 4096. However if we want the ServerID to also match the ReplicaId, which must be
+  # an integer < 1000, we must restrict it to match. To accomplish this, we construct the ServerID by taking the
+  # hexadecimal InstanceId and performing a (modulo-500 + 500) to bring it into the range [0,999).
+  # Note: There is a 0.1% chance (1/1000) that this will cause a collision. Given that the number of new instances
+  # should remain relatively low (1 new instance only when an existing one fails), this should be safe enough.
+  server_id=$(printf "%d\n" "$((0x${instance_id} % 500 + 500))")
+
+  # Add the server id to a list of olcServerId attribute entries.
+  SERVER_IDS="${SERVER_IDS}olcServerId: ${server_id} ldap://${instance_ip}:${ldap_port}/
+"
+  # Also add it to a list of olcSyncRepl replica entries, excluding the current instance.
+  [ "${instance_ip}" != "${CURRENT_IP_ADDRESS}" ] && \
+  REPL_DETAILS="${REPL_DETAILS}olcSyncRepl: rid=${server_id}
+  provider=ldap://${instance_ip}:${ldap_port}
+  bindmethod=simple
+  binddn=\"cn=root,${base_root}\"
+  credentials=${bind_password}
+  searchbase=\"${base_root}\"
+  type=refreshAndPersist
+  retry=\"5 5 300 +\"
+"
+done
+SERVER_IDS=$(echo "$SERVER_IDS" | grep . | sort)
+echo "SERVER_IDS:
+$SERVER_IDS"
+
+# Check if any servers have changed
+if [ "$SERVER_IDS" == "$CURRENT_SERVER_IDS" ]; then
     echo 'No changes'
     exit 0
 fi
 
-# Update the server ids in config
-ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
+echo
+
+# Update the server ids in the LDAP config
+echo 'LDIF - Updating ServerIDs:'
+tee /dev/tty <<EOF |\
+ldapmodify -Q -Y EXTERNAL -H ldapi:///
 dn: cn=config
 changetype: modify
 replace: olcServerID
-$AWS_SERVER_IDS
+$SERVER_IDS
 EOF
 
-# Update the replicas in the database
-CURRENT_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
+# Update the replicas in the LDAP database
+echo 'LDIF - Updating SyncRepl details:'
+tee /dev/tty <<EOF |\
+ldapmodify -Q -Y EXTERNAL -H ldapi:///
 dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 replace: olcSyncRepl
-$(echo "$IP_ADDRESSES" | grep -v "$CURRENT_IP_ADDRESS" | awk '{print "olcSyncRepl: rid=" NR "\n\
-  provider=ldap://" $s ":{{ ldap_port }}\n\
-  bindmethod=simple\n\
-  binddn=\"cn=root,{{ base_root }}\"\n\
-  credentials={{ bind_password }}\n\
-  searchbase=\"{{ base_root }}\"\n\
-  type=refreshAndPersist\n\
-  retry=\"5 5 300 +\""}')
+$REPL_DETAILS
 -
 replace: olcMirrorMode
 olcMirrorMode: TRUE
