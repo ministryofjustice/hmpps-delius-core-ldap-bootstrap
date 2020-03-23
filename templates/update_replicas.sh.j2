@@ -49,7 +49,7 @@ IFS=$'\n'; for instance in $INSTANCES; do
   instance_ip=$(echo "$instance" | sed -E 's/i-.*	(.*)/\1/')
   # The ServerID should be an integer < 4096. However if we want the ServerID to also match the ReplicaId, which must be
   # an integer < 1000, we must restrict it to match. To accomplish this, we construct the ServerID by taking the
-  # hexadecimal InstanceId and performing a (modulo-500 + 500) to bring it into the range [0,999).
+  # hexadecimal InstanceId and performing a (modulo-500 + 500) to bring it into the range [0,999].
   # Note: There is a 0.1% chance (1/1000) that this will cause a collision. Given that the number of new instances
   # should remain relatively low (1 new instance only when an existing one fails), this should be safe enough.
   server_id=$(printf "%d\n" "$((0x${instance_id} % 500 + 500))")
