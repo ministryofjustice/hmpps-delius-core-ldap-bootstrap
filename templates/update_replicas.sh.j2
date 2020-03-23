@@ -55,7 +55,7 @@ IFS=$'\n'; for instance in $INSTANCES; do
   server_id=$(printf "%d\n" "$((0x${instance_id} % 500 + 500))")
 
   # Add the server id to a list of olcServerId attribute entries.
-  SERVER_IDS="${SERVER_IDS}olcServerId: ${server_id} ldap://${instance_ip}:${ldap_port}/
+  SERVER_IDS="${SERVER_IDS}olcServerID: ${server_id} ldap://${instance_ip}:${ldap_port}/
 "
   # Also add it to a list of olcSyncRepl replica entries, excluding the current instance.
   [ "${instance_ip}" != "${CURRENT_IP_ADDRESS}" ] && \
@@ -99,7 +99,9 @@ dn: olcDatabase={2}mdb,cn=config
 changetype: modify
 replace: olcSyncRepl
 $REPL_DETAILS
--
+
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
 replace: olcMirrorMode
 olcMirrorMode: TRUE
 EOF
