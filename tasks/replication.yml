@@ -34,7 +34,7 @@
   template:
     src: update_replicas.sh.j2
     dest: /usr/bin/update_replicas
-    mode: u+x
+    mode: 700
 
 - name: (replication) Scheduled task to keep replica details up-to-date, every minute
   cron:
