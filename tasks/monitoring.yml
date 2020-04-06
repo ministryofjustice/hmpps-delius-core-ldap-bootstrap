@@ -19,7 +19,7 @@
 - name: (monitoring) Create a cron job to update metrics every minute
   cron:
     name: Update LDAP metrics
-    job: update_ldap_metrics
+    job: /usr/bin/flock -n /tmp/update_ldap_metrics.lock update_ldap_metrics
     minute: '*'
     hour: '*'
     day: '*'

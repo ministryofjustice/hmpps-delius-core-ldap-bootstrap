@@ -39,7 +39,7 @@
 - name: (replication) Scheduled task to keep replica details up-to-date, every minute
   cron:
     name: Update replica details
-    job: update_replicas
+    job: /usr/bin/flock -n /tmp/update_replicas.lock update_replicas
     minute: '*'
     hour: '*'
     day: '*'
