@@ -6,14 +6,14 @@ olcDbDirectory: /var/lib/ldap
 olcSuffix: {{ base_root }}
 olcAccess: {0}to *
   by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write
-  by dn="{{ bind_user | default('cn=admin'+base_root) }}" write
+  by dn="{{ bind_user }}" write
   by dn="cn=pwm-admin,{{ base_users }}" write
   by self write
   by anonymous auth
   by * read
 olcRootDN: cn=root,{{ base_root }}
 olcRootPW: {{ bind_password_hash.stdout }}
-olcTimeLimit: time.soft={{ time_limit | default('30') }} time.hard={{ time_limit | default('30') }}
+olcTimeLimit: time.soft={{ query_time_limit }} time.hard={{ query_time_limit }}
 olcDbIndex: ou,cn,mail,surname,givenName eq,pres,sub
 olcDbIndex: objectClass,uniqueMember,uid,member,entryUUID eq,pres
-olcDbMaxSize: {{ db_max_size | default('53687091200') }}
+olcDbMaxSize: {{ db_max_size }}

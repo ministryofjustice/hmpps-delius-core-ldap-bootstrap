@@ -6,6 +6,7 @@
 
 - name: (facts) Set facts
   set_fact:
+    workspace: /root/bootstrap-workspace
     bind_user: "{{ bind_user | default('cn=admin,'+base_root) }}"
     ldap_connection: '-H ldap:/// -D "cn=root,{{ base_root }}" -w ${bind_password}'
 
