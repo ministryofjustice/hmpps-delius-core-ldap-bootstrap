@@ -6,27 +6,23 @@ Ansible role to setup/configure an OpenLDAP instance for use with National Deliu
 
 Role Variables
 --------------
+See [common.tfvars#default_ldap_config](https://github.com/ministryofjustice/hmpps-env-configs/blob/master/common/common.tfvars) for example configuration.
 
 ```yaml
-workspace: Workspace location for storing temporary files during bootstrap
-
-# LDAP
-ldap_protocol: Protocol to be expose the ldap on - ldap or ldaps 
-ldap_port: Port to expose the ldap on
-bind_user: Admin user. Default='cn=admin,{{ base_root }}'.
+# Connection
+ldap_port: Port to expose the ldap on.
+bind_user: Distinguished name for the admin user.
 bind_password: Desired password for the admin user.
-base_root: The root context for the directory (eg. dc=moj,dc=com)
-log_level: The slapd log-level. Default=stats.
-
-# Tuning
-time_limit: LDAP query timout, in seconds. Default=30.
-db_max_size: Max size of the ldap mdb database, in bytes. Default=50GB.
-num_threads: Number of threads to use. Default=2*number of processors, or 16 if there are less than 8 processors.
-
+# Structure
+base_root: The root context for the directory.
+# Logging
+log_level: The slapd log-level, as a comma-separated string eg. "stats,acl". See https://www.openldap.org/doc/admin24/slapdconfig.html#loglevel%20%3Clevel%3E
 # Backups
-s3_backups_bucket: S3 bucket name to be used for LDIF backups
-backup_frequency: How often to backup to S3. Default=hourly.
-
+s3_backups_bucket: S3 bucket name to be used for LDIF backups.
+backup_frequency: How often to backup to S3, as a cron special time eg. hourly, daily, weekly.
+# Performance/tuning
+query_time_limit: LDAP query timout, in seconds.
+db_max_size: Max size of the ldap mdb database, in bytes.
 ```
 
 Tasks
