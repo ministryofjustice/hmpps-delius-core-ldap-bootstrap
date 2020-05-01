@@ -9,5 +9,5 @@
 - name: (backups) Create a cron job to perform scheduled backups
   cron:
     name: Backup to S3
-    job: backup_ldap
-    special_time: "{{ backup_frequency | default('hourly') }}"
+    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap
+    special_time: "{{ backup_frequency }}"
