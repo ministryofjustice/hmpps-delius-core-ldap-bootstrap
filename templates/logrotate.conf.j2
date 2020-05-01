@@ -1,0 +1,12 @@
+/var/log/slapd.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    create 0600 root root
+    delaycompress
+    compress
+    postrotate
+        systemctl rsyslog restart
+    endscript
+}

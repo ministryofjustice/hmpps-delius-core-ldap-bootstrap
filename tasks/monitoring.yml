@@ -5,6 +5,11 @@
     src: rsyslog.conf.j2
     dest: /etc/rsyslog.d/slapd.conf
 
+- name: (monitoring) Apply logrotate config file
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.d/slapd
+
 - name: (monitoring) Restart rsyslog service
   service:
     name: rsyslog
