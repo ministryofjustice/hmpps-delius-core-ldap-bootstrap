@@ -47,6 +47,9 @@
 - name: Enable regular backups
   include: backups.yml
 
+- name: Create ndmis directory and script
+  include: mis_scripts.yml
+
 - name: (main) Remove workspace
   file:
     path: '{{ workspace }}'
