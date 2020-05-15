@@ -1,0 +1,13 @@
+---
+
+- name: Create ndmis directory if it does not exist
+  file:
+    path: /root/ndmis_requests
+    state: directory
+    mode: '0755'
+
+- name: Create mis user grant script
+  template:
+    src: add_user_to_group.sh.j2
+    dest: /root/ndmis_requests/add_user_to_group.sh
+    mode: u+x
