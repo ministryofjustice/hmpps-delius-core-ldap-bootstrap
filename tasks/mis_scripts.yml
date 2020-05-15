@@ -11,11 +11,3 @@
     src: add_user_to_group.sh.j2
     dest: /root/ndmis_requests/add_user_to_group.sh
     mode: u+x
-
-- name: Create mis_group_names file
-  template:
-    src: "{{ role_path }}/templates/mis_group_names.j2"
-    dest: "/root/ndmis_requests/group_names"
-    owner: "root"
-    mode: "0640"
-    group: "root"
