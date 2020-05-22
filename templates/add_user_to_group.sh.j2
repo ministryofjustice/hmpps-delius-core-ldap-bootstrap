@@ -12,7 +12,7 @@ LOGFILE="LOGFILE.log"
 usage ()
 {
 echo "Script to add user to LDAP Group"
-echo "Example Usage: NDMIS     $0 UserID   GroupName,{{ base_groups }}  (Use quotes if there are spaces in group name)"
+echo "Example Usage: NDMIS     $0 UserID   GroupName,ou=NDMIS-Reporting,{{ base_groups }}  (Use quotes if there are spaces in group name)"
 echo "Example Usage Nextcloud: $0 UserID   GroupName,ou=Fileshare,{{ base_groups }}"
 exit 1
 }
