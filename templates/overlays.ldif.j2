@@ -43,3 +43,5 @@ changetype: add
 objectClass: olcOverlayConfig
 objectClass: olcSyncProvConfig
 olcOverlay: {3}syncprov
+# Write the contextCSN to disk every 100 operations or 10 minutes - whichever comes first
+olcSpCheckpoint: 100 10
