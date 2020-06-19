@@ -16,4 +16,5 @@ olcRootPW: {{ bind_password_hash.stdout }}
 olcTimeLimit: time.soft={{ query_time_limit }} time.hard={{ query_time_limit }}
 olcDbIndex: ou,cn,mail,surname,givenName eq,pres,sub
 olcDbIndex: objectClass,uniqueMember,uid,member,entryUUID eq,pres
+olcDbIndex: entryCSN eq
 olcDbMaxSize: {{ db_max_size }}
