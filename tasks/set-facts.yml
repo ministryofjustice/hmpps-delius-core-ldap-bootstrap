@@ -8,6 +8,7 @@
   set_fact:
     workspace: /root/bootstrap-workspace
     bind_user: "{{ bind_user | default('cn=admin,'+base_root) }}"
+    data_file: "{{ data_file | default('/var/lib/ldap/data.mdb') }}"
     ldap_connection: '-H ldap:/// -D "cn=root,{{ base_root }}" -w ${bind_password}'
 
 - name: (facts) Get processor count
@@ -15,8 +16,5 @@
   register: processor_count
 
 - name: (facts) Get IP address of the current instance
-  shell: >
-    aws ec2 describe-instances --output text --region {{ region }}
-    --query 'Reservations[*].Instances[*].[PrivateIpAddress]'
-    --instance-ids $INSTANCE_ID
+  shell: curl http://169.254.169.254/latest/meta-data/local-ipv4
   register: private_ip

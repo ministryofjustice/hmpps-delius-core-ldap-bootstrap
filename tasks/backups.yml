@@ -6,8 +6,16 @@
     dest: /usr/bin/backup_ldap
     mode: u+x
 
-- name: (backups) Create a cron job to perform scheduled backups
+- name: (backups) Create cron job to perform daily backups
+  when: backup_frequency == 'hourly' or backup_frequency == 'daily'
   cron:
-    name: Backup to S3
-    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap
-    special_time: "{{ backup_frequency }}"
+    name: Backup to S3 - daily
+    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap daily
+    special_time: daily
+
+- name: (backups) Create cron job to perform hourly backups
+  when: backup_frequency == 'hourly'
+  cron:
+    name: Backup to S3 - hourly
+    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap hourly
+    special_time: hourly
