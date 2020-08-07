@@ -2,7 +2,7 @@
 
 bucket='{{ s3_backups_bucket }}'
 prefix="${1:-manual}"
-filename="backup-{{ instance_id }}-$(date +%Y%m%d-%H%M%S).gz"
+filename="backup-$(date +%Y%m%d-%H%M%S)-{{ instance_id }}.gz"
 destination="s3://${bucket}/${prefix}/${filename}"
 
 echo "Compressing and backing up to ${destination}"
