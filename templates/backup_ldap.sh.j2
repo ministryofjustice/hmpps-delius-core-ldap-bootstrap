@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
 
-set +x
+bucket='{{ s3_backups_bucket }}'
+prefix="${1:-manual}"
+filename="backup-$(date +%Y%m%d-%H%M%S)-{{ instance_id }}.gz"
+destination="s3://${bucket}/${prefix}/${filename}"
 
-backupfile=/tmp/backup-$(date +%Y%m%d-%H%M%S).ldif
-bind_password=$(aws ssm get-parameter --region {{ region }} --with-decryption --name /{{ environment_name }}/{{ project_name }}/apacheds/apacheds/ldap_admin_password | jq -r .Parameter.Value)
-ldapsearch -L {{ ldap_connection }} -b {{ base_root }} '(objectclass=*)' > ${backupfile}
-
-
-if [ -s "${backupfile}" ]
-then
-    aws s3 cp ${backupfile} s3://{{ s3_backups_bucket }}/ldap/
-    rm -f ${backupfile}
-else
-    echo "Backup file is empty or doesn't exist"
-    exit 1
-fi
+echo "Compressing and backing up to ${destination}"
+ionice -c 3 nice gzip -cv '{{ data_file }}' | aws s3 cp - "${destination}"

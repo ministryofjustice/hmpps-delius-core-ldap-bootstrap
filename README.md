@@ -19,7 +19,7 @@ base_root: The root context for the directory.
 log_level: The slapd log-level, as a comma-separated string eg. "stats,acl". See https://www.openldap.org/doc/admin24/slapdconfig.html#loglevel%20%3Clevel%3E
 # Backups
 s3_backups_bucket: S3 bucket name to be used for LDIF backups.
-backup_frequency: How often to backup to S3, as a cron special time eg. hourly, daily, weekly.
+backup_frequency: How often to backup to S3. Either 'none', 'hourly' or 'daily'.
 # Performance/tuning
 query_time_limit: LDAP query timout, in seconds.
 db_max_size: Max size of the ldap mdb database, in bytes.
