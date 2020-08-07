@@ -11,7 +11,8 @@
   cron:
     name: Backup to S3 - daily
     job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap daily
-    special_time: daily
+    hour: "7"
+    minute: "30"  # Runs at 7:30am to account for environment auto stop/start
 
 - name: (backups) Create cron job to perform hourly backups
   when: backup_frequency == 'hourly'
