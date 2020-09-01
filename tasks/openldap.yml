@@ -13,7 +13,7 @@
     path: '{{ data_file | dirname }}'
     owner: ldap
     group: ldap
-    mode: 0600
+    mode: 0700
 
 - name: (openldap) Set slapd args
   template:
