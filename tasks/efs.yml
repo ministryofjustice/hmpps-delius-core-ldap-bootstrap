@@ -1,0 +1,37 @@
+---
+
+- name: (efs) Install packages
+  yum:
+    name: rpm-build
+    state: present
+
+- name: (efs) Clone AWS efs-utils
+  git:
+    repo: https://github.com/aws/efs-utils.git
+    dest: '{{ workspace }}/efs-utils'
+
+- name: (efs) Build AWS efs-utils
+  make:
+    chdir: '{{ workspace }}/efs-utils'
+    target: rpm
+
+- name: (efs) Install AWS efs-utils
+  yum:
+    name: '{{ workspace }}/efs-utils/build/amazon-efs-utils*rpm'
+    state: present
+
+- name: (efs) Create mount directory
+  file:
+    path: '{{ data_file | dirname }}'
+    state: directory
+    mode: w+rw
+
+- name: (efs) Append to fstab file
+  lineinfile:
+    path: /etc/fstab
+    line: '{{ efs_dns_name }}:/ {{ data_file | dirname }} efs _netdev 0 0'
+
+- name: (efs) Mount disks
+  command: mount -a
+  args:
+    warn: no

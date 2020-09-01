@@ -29,6 +29,10 @@
     state: present
   become: yes
 
+- name: Mount EFS
+  when: efs_dns_name is defined and efs_dns_name != ''
+  include: efs.yml
+
 - name: Install OpenLDAP
   include: openldap.yml
 
