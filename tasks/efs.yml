@@ -30,7 +30,7 @@
   file:
     path: '{{ data_file | dirname }}'
     state: directory
-    mode: w+rw
+    mode: a+rw
 
 - name: (efs) Append to fstab file
   lineinfile:
