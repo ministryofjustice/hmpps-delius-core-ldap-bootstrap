@@ -15,9 +15,15 @@
     chdir: '{{ workspace }}/efs-utils'
     target: rpm
 
+- name: (efs) Find RPM file
+  find:
+    path: '{{ workspace }}/efs-utils/build'
+    pattern: '*.rpm'
+  register: rpm_files
+
 - name: (efs) Install AWS efs-utils
   yum:
-    name: '{{ workspace }}/efs-utils/build/amazon-efs-utils*rpm'
+    name: '{{ rpm_files.files[0].path }}'
     state: present
 
 - name: (efs) Create mount directory
