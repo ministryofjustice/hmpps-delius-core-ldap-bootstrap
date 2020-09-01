@@ -31,7 +31,7 @@ Tasks
 -----
 ### 1. [efs.yml](tasks/efs.yml)
 Installs Amazon's [EFS-Utils](https://github.com/aws/efs-utils),
-and mounts the provided EFS server for storing the MDB data.
+and mounts the optional EFS server for storing the MDB data.
 
 ### 2. [openldap.yml](tasks/openldap.yml)
 Installs the OpenLDAP packages (server and client), 
@@ -49,15 +49,9 @@ Creates a nightly cron job to lock user accounts that are past their end date.
 Configures logging using rsyslog, 
 and publishes LDAP monitoring info (eg. connections, operations) to CloudWatch.
 
-### 6. [replication.yml](tasks/replication.yml)
-Enables dynamic [multi-master](https://www.openldap.org/doc/admin24/replication.html#N-Way%20Multi-Master%20replication) replication, 
-by continually fetching the details of other servers in the Auto-Scaling Group and updating them in the database config.
-See [update_replicas.sh.j2](templates/update_replicas.sh.j2).
-
-Additionally, this sets up a service for electing a primary instance to support automatic failover at the load-balancer.
+### 6. [failover.yml](tasks/failover.yml)
+Sets up a service for electing a primary instance to support automatic failover at the load-balancer.
 See [is-primary.py.j2](templates/is-primary.py.j2).
-Configuring the LDAP in this way, using OpenLDAP multi-master but directing all reads and writes to a single node, 
-reduces the impact of replication latency while still minimizing downtime on failover - because all instances are already prepared to act as the master.
 
 ### 7. [backups.yml](tasks/backups.yml)
 Schedules regular backups of the directory to an S3 bucket.

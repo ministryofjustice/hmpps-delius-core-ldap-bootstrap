@@ -45,8 +45,9 @@
 - name: Configure monitoring and logging
   include: monitoring.yml
 
-- name: Enable replication
-  include: replication.yml
+- name: Enable failover endpoint
+  when: efs_dns_name is defined and efs_dns_name != ''
+  include: failover.yml
 
 - name: Enable regular backups
   include: backups.yml
