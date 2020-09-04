@@ -23,3 +23,4 @@
     state: restarted
     enabled: true
     daemon_reload: yes
+  failed_when: false # Let this fail in case another instance already has the lock
