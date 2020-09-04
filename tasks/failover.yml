@@ -3,7 +3,7 @@
 - name: (failover) Enable creation of lock file in the shared data directory
   lineinfile:
     path: /lib/systemd/system/slapd.service
-    regex: ^ExecStart=*
+    regexp: ^ExecStart=*
     line: ExecStart=/usr/bin/flock -n {{ data_file | dirname }}/slapd.lock /usr/sbin/slapd -u ldap -h ${SLAPD_URLS} $SLAPD_OPTIONS
 
 - name: (failover) Enable auto-restart if lock cannot be obtained
