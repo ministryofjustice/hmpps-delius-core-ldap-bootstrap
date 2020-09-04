@@ -1,31 +1,25 @@
 ---
 
-- name: (failover) Copy script for electing primary instance
-  template:
-    src: is-primary.py.j2
-    dest: /usr/bin/is-primary.py
+- name: (failover) Enable creation of lock file in the shared data directory
+  lineinfile:
+    path: /lib/systemd/system/slapd.service
+    regex: ^ExecStart=*
+    line: ExecStart=/usr/bin/flock -n {{ data_file | dirname }}/slapd.lock /usr/sbin/slapd -u ldap -h ${SLAPD_URLS} $SLAPD_OPTIONS
 
-- name: (failover) Install python3
-  yum:
-    name: python3
-    state: present
+- name: (failover) Enable auto-restart if lock cannot be obtained
+  blockinfile:
+    path: /lib/systemd/system/slapd.service
+    insertafter: ^ExecStart=*
+    block: |
+      RemainAfterExit=yes
+      Restart=always
+      RestartSec=30
+      StartLimitInterval=0
 
-- name: (failover) Install pip dependencies
-  pip:
-    name:
-      - boto3
-      - requests
-    executable: pip3
-
-- name: (failover) Create the is-primary service
-  template:
-    src: is-primary.service.j2
-    dest: /lib/systemd/system/is-primary.service
-
-- name: (failover) Enable and start the service
+- name: (failover) Update and restart the service
   become: yes
-  systemd:
-    name: is-primary.service
-    state: started
+  service:
+    name: slapd.service
+    state: restarted
     enabled: true
     daemon_reload: yes
