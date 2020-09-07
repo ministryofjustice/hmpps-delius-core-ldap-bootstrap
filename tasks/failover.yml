@@ -34,7 +34,7 @@
   lineinfile:
     path: /lib/systemd/system/slapd.service
     insertbefore: ^ExecStart=*
-    line: /bin/curl -sf localhost/is-primary
+    line: ExecStartPre=/bin/curl -sf localhost/is-primary
 
 - name: (failover) Enable auto-restart of slapd service
   blockinfile:
