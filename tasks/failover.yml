@@ -29,28 +29,3 @@
     state: started
     enabled: true
     daemon_reload: yes
-
-- name: (failover) Update slapd service to only start on the primary
-  lineinfile:
-    path: /lib/systemd/system/slapd.service
-    insertbefore: ^ExecStart=*
-    line: ExecStartPre=/bin/curl -sf localhost/is-primary
-
-- name: (failover) Enable auto-restart of slapd service
-  blockinfile:
-    path: /lib/systemd/system/slapd.service
-    insertafter: ^ExecStart=*
-    block: |
-      RemainAfterExit=yes
-      Restart=on-failure
-      RestartSec=30
-      StartLimitInterval=0
-
-- name: (failover) Reload and restart the service
-  become: yes
-  service:
-    name: slapd.service
-    state: restarted
-    enabled: true
-    daemon_reload: yes
-  failed_when: false # Let this fail in case another instance is the primary
