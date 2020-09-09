@@ -31,7 +31,7 @@ Tasks
 -----
 ### 1. [efs.yml](tasks/efs.yml)
 Installs Amazon's [EFS-Utils](https://github.com/aws/efs-utils),
-and mounts the optional EFS server for storing the MDB data.
+and mounts an optional EFS server for storing the MDB data.
 
 ### 2. [openldap.yml](tasks/openldap.yml)
 Installs the OpenLDAP packages (server and client), 
@@ -50,9 +50,8 @@ Configures logging using rsyslog,
 and publishes LDAP monitoring info (eg. connections, operations) to CloudWatch.
 
 ### 6. [failover.yml](tasks/failover.yml)
-Sets up locking and auto-restarting of the slapd service, so that if the service stops on one instance then a standby instance can automatically take its place.
-A lock file will be created in /var/lib/ldap/slapd.lock.
-**Note: if this file already exists in the data directory then the service will not start up.** 
+Sets up a service for electing a primary instance to support automatic failover at the load-balancer.
+See [leader-election.py.j2](templates/leader-election.py.j2).
 
 ### 7. [backups.yml](tasks/backups.yml)
 Schedules regular backups of the directory to an S3 bucket.
