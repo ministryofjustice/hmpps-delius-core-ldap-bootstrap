@@ -4,7 +4,7 @@ After=syslog.target network-online.target slapd.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/bin/is-primary.py
+ExecStart=/usr/bin/python3 /usr/bin/leader-election.py
 Restart=on-failure
 
 [Install]

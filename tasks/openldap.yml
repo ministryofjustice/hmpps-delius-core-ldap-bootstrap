@@ -8,6 +8,13 @@
     - openldap-servers
     - openldap-clients
 
+- name: (openldap) Set permissions on data directory
+  file:
+    path: '{{ data_file | dirname }}'
+    owner: ldap
+    group: ldap
+    mode: 0700
+
 - name: (openldap) Set slapd args
   template:
     src: slapd.args.j2

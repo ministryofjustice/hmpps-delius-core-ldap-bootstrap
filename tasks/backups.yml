@@ -6,17 +6,17 @@
     dest: /usr/bin/backup_ldap
     mode: u+x
 
-- name: (backups) Create cron job to perform daily backups
+- name: (backups) Create cron job to perform daily backups of the primary
   when: backup_frequency == 'hourly' or backup_frequency == 'daily'
   cron:
     name: Backup to S3 - daily
-    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap daily
+    job: /usr/bin/flock -n /tmp/backup_ldap.lock /bin/sh -c '/bin/curl -sf localhost/is-primary && backup_ldap daily'
     hour: "7"
     minute: "30"  # Runs at 7:30am to account for environment auto stop/start
 
-- name: (backups) Create cron job to perform hourly backups
+- name: (backups) Create cron job to perform hourly backups of the primary
   when: backup_frequency == 'hourly'
   cron:
     name: Backup to S3 - hourly
-    job: /usr/bin/flock -n /tmp/backup_ldap.lock backup_ldap hourly
+    job: /usr/bin/flock -n /tmp/backup_ldap.lock /bin/sh -c '/bin/curl -sf localhost/is-primary && backup_ldap hourly'
     special_time: hourly

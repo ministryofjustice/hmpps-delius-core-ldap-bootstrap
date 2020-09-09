@@ -9,5 +9,5 @@
 - name: (user-expiry) Scheduled task to lock users after end date
   cron:
     name: Expire LDAP users
-    job: user_expiry
+    job: /bin/curl -sf localhost/is-primary && user_expiry
     special_time: "daily"

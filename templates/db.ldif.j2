@@ -18,3 +18,5 @@ olcDbIndex: ou,cn,mail,surname,givenName eq,pres,sub
 olcDbIndex: objectClass,uniqueMember,uid,member,entryUUID eq,pres
 olcDbIndex: entryCSN eq
 olcDbMaxSize: {{ db_max_size }}
+olcDbNosync: TRUE
+olcDbCheckpoint: 1024 1
