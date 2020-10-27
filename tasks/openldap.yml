@@ -23,6 +23,14 @@
     group: ldap
     mode: 0644
 
+- name: (openldap) Update slapd service to start after EFS is mounted
+  when: efs_mount_unit.stdout is defined and efs_mount_unit.stdout != ''
+  lineinfile:
+    path: /usr/lib/systemd/system/slapd.service
+    backrefs: yes
+    regexp: '^(After=.*)$'
+    line: '\1 {{ efs_mount_unit.stdout }}'
+
 - name: (openldap) Remove default hdb database
   file:
     path: '/etc/openldap/slapd.d/cn=config/olcDatabase={2}hdb.ldif'
@@ -33,6 +41,7 @@
     name: slapd
     state: started
     enabled: yes
+    daemon_reload: yes
 
 - name: (openldap) Hash the admin password
   shell: 'slappasswd -h {SSHA} -s ${bind_password}'

@@ -41,3 +41,7 @@
   command: mount -a
   args:
     warn: no
+
+- name: (efs) Get the name of the mount unit
+  shell: systemctl list-units --type=mount | grep {{ data_file | dirname }} | awk '{print $1}'
+  register: efs_mount_unit
