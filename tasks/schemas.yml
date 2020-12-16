@@ -5,9 +5,53 @@
   run_once: yes
   become: no
   git:
-    dest: rbac
+    dest: hmpps-ndelius-rbac
     repo: https://github.com/ministryofjustice/hmpps-ndelius-rbac
     version: '{{ ldap_config.rbac_version }}'
 
-- name: (schemas) Import schemas
-  include_tasks: rbac/import_schemas.yml
+- name: Set workspace
+  set_fact:
+    persistent_workspace: /root/uplift/{{ ldap_config.rbac_version }}-persistent
+
+- name: Create workspace
+  file:
+    path: '{{ persistent_workspace }}/hmpps-ndelius-rbac/schemas'
+    state: directory
+
+- name: Upload new schema files
+  copy:
+    src: '{{ item }}'
+    dest: '{{ persistent_workspace }}/{{ item }}'
+  register: upload_schemas
+  with_items:
+    - hmpps-ndelius-rbac/schemas/delius.ldif
+    - hmpps-ndelius-rbac/schemas/pwm.ldif
+
+- name: Check if schemas have changed
+  when: True in upload_schemas.results | map(attribute='changed')
+  block:
+    - name: Find existing schema filenames
+      find:
+        paths: /etc/openldap/slapd.d/cn=config/cn=schema
+        patterns: 'cn={*}delius.ldif,cn={*}pwm.ldif'
+      register: existing_schema_files
+
+    - name: Stop LDAP service
+      service:
+        name: slapd
+        state: stopped
+
+    - name: Backup and remove existing schema files
+      shell: mv '{{ item.path }}' '{{ persistent_workspace }}/hmpps-ndelius-rbac/schemas/{{ item.path | basename }}.bak'
+      with_items: '{{ existing_schema_files.files }}'
+
+    - name: Start LDAP service
+      service:
+        name: slapd
+        state: started
+
+    - name: Import new schemas
+      shell: 'ldapadd -Y EXTERNAL -H ldapi:/// -f {{ persistent_workspace }}/{{ item }}'
+      with_items:
+        - hmpps-ndelius-rbac/schemas/delius.ldif
+        - hmpps-ndelius-rbac/schemas/pwm.ldif
