@@ -20,8 +20,17 @@
     recurse: yes
 
 - name: Fix centos 7 repos (use vault instead of mirror)
-  command: |
-    sed -i -e '/^mirrorlist/d;/^#baseurl=/{s,^#,,;s,/mirror,/vault,;}' /etc/yum.repos.d/CentOS*.repo
+  shell: sed -i -e '/^mirrorlist/d;/^#baseurl=/{s,^#,,;s,/mirror,/vault,;}' /etc/yum.repos.d/CentOS*.repo
+  become: yes
+
+- name: Install efs-utils dependencies
+  yum:
+    name:
+      - cargo
+      - rust
+      - openssl-devel
+    state: present
+  become: yes
 
 - name: (port) Block inbound access on ldap_port until bootstrap is finished
   iptables:
