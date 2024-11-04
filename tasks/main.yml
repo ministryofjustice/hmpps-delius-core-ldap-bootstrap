@@ -14,17 +14,21 @@
 
 - name: (main) Create workspace
   file:
-    path: '{{ workspace }}'
+    path: "{{ workspace }}"
     state: directory
     mode: 0700
     recurse: yes
+
+- name: Fix centos 7 repos (use vault instead of mirror)
+  command: |
+    sed -i -e '/^mirrorlist/d;/^#baseurl=/{s,^#,,;s,/mirror,/vault,;}' /etc/yum.repos.d/CentOS*.repo
 
 - name: (port) Block inbound access on ldap_port until bootstrap is finished
   iptables:
     chain: INPUT
     protocol: tcp
-    source: '!127.0.0.1'
-    destination_port: '{{ ldap_port }}'
+    source: "!127.0.0.1"
+    destination_port: "{{ ldap_port }}"
     jump: REJECT
     state: present
   become: yes
@@ -57,15 +61,15 @@
 
 - name: (main) Remove workspace
   file:
-    path: '{{ workspace }}'
+    path: "{{ workspace }}"
     state: absent
 
 - name: (port) Re-enable inbound access on ldap_port
   iptables:
     chain: INPUT
     protocol: tcp
-    source: '!127.0.0.1'
-    destination_port: '{{ ldap_port }}'
+    source: "!127.0.0.1"
+    destination_port: "{{ ldap_port }}"
     jump: REJECT
     state: absent
   become: yes
